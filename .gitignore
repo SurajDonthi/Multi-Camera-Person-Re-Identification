@@ -142,7 +142,8 @@ dmypy.json
 .pyre/
 
 # ML folders
-datasets/
+# data/
+# datasets/
 models/
 lightning_logs/
 
