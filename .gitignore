@@ -1,5 +1,5 @@
 # Editors
-# .vscode/
+.vscode/
 .idea/
 
 # Vagrant
@@ -142,7 +142,7 @@ dmypy.json
 .pyre/
 
 # ML folders
-# datasets/
+datasets/
 models/
 lightning_logs/
 
