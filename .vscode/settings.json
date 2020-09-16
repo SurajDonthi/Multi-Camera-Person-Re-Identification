@@ -1,0 +1,7 @@
+{
+  "python.pythonPath": "C:\\Users\\suraj\\Miniconda3\\envs\\PytorchTest\\python.exe",
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": true,
+  "python.linting.enabled": true,
+  "python.envFile": "${workspaceFolder}/.vscode/.env"
+}
