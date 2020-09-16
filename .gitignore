@@ -1,5 +1,5 @@
 # Editors
-# .vscode/
+.vscode/
 .idea/
 
 # Vagrant
@@ -115,7 +115,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-# .env
+.env
 .venv
 env/
 venv/
