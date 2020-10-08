@@ -5,11 +5,106 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Current File",
+      "name": "Execution Mode: mtmct_reid - Market",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}/src/main.py",
-      "console": "integratedTerminal"
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "pythonArgs": ["-W", "ignore::UserWarning::0"],
+      "args": [
+        "--data_dir",
+        "data\\raw\\Market-1501-v15.09.15",
+        "--st_distribution",
+        "data\\raw\\Market-1501-v15.09.15\\st_distribution.pkl",
+        "--gpus",
+        "1",
+        "--max_epochs",
+        "60",
+        "--precision",
+        "16"
+        // "--profiler",
+        // "True"
+      ]
+    },
+    {
+      "name": "Execution Mode: mtmct_reid - Duke",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "pythonArgs": ["-W", "ignore::UserWarning::0"],
+      "args": [
+        "--data_dir",
+        "data\\raw\\DukeMTMC-reID",
+        "--st_distribution",
+        "data\\raw\\DukeMTMC-reID\\st_distribution.pkl",
+        "--gpus",
+        "1",
+        "--max_epochs",
+        "60",
+        "--precision",
+        "16"
+        // "--profiler",
+        // "True"
+      ]
+    },
+    {
+      "name": "Debugging mode: mtmtct_reid - Market",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/mtmct_reid/main.py",
+      "console": "integratedTerminal",
+      "pythonArgs": ["-W", "ignore::UserWarning::0"],
+      "args": [
+        "--data_dir",
+        "data\\raw\\Market-1501-v15.09.15",
+        "--st_distribution",
+        "data\\raw\\Market-1501-v15.09.15\\st_distribution.pkl",
+        "--gpus",
+        "1",
+        "--max_epochs",
+        "1",
+        "--limit_train_batches",
+        "0.005",
+        "--limit_val_batches",
+        "0.008",
+        "--limit_test_batches",
+        "0.005",
+        "--precision",
+        "16"
+        // "--save_distribution",
+        // "\"\""
+        // "--profiler",
+        // "True"
+      ]
+    },
+    {
+      "name": "Debugging mode: mtmtct_reid - Duke",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/mtmct_reid/main.py",
+      "console": "integratedTerminal",
+      "pythonArgs": ["-W", "ignore::UserWarning::0"],
+      "args": [
+        "--data_dir",
+        "data\\raw\\DukeMTMC-reID",
+        "--gpus",
+        "1",
+        "--max_epochs",
+        "1",
+        "--limit_train_batches",
+        "0.005",
+        "--limit_val_batches",
+        "0.008",
+        "--limit_test_batches",
+        "0.01",
+        "--precision",
+        "16",
+        "--save_distribution",
+        "\"\""
+        // "--profiler",
+        // "True"
+      ]
     }
   ]
 }
