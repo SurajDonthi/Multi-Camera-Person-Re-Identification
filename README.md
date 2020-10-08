@@ -1,6 +1,6 @@
 # Multi-Camera Person Re-Identification
 
-This repository is inspired by the paper [Spatial-Temporal Reidentification (ST-ReID)](https://arxiv.org/pdf/1812.03282.pdf) ![formula](https://render.githubusercontent.com/render/math?math=^{[1]}). The state-of-the-art for Person Re-identification tasks.
+This repository is inspired by the paper [Spatial-Temporal Reidentification (ST-ReID)](https://arxiv.org/pdf/1812.03282.pdf)[1]. The state-of-the-art for Person Re-identification tasks.
 
 This repository has been trained & tested on DukeMTMTC-reID and Market-1501 datasets. The model can be easily trained on any new datasets.
 
