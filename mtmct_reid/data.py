@@ -1,7 +1,7 @@
 # from argparse import ArgumentParser
 # import os
 from glob import glob
-from typing import Optional, Union
+from typing import Optional
 
 import joblib
 import pytorch_lightning as pl
@@ -29,7 +29,7 @@ class ReIDDataset(Dataset):
         elif 'duke' in self.data_dir.lower():
             self.dataset = 'duke'
 
-        self.imgs = glob(self.data_dir + '\\*.jpg')
+        self.imgs = glob(self.data_dir + '/*.jpg')
         self.num_samples = len(self.imgs)
         self.cam_ids, self.labels, self.frames = get_ids(
             self.imgs, self.dataset)

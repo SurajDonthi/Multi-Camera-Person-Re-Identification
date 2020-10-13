@@ -197,19 +197,26 @@ def AP_CMC(scores, query_target, query_cam, gallery_targets,
 
     # find good_index index
     ngood = len(good_index)
+
+    # if ngood > 0:
     mask = np.in1d(index, good_index)
     rows_good = np.argwhere(mask is True)
     rows_good = rows_good.flatten()
 
     cmc[rows_good[0]:] = 1
+
     for i in range(ngood):
         d_recall = 1.0/ngood
+
         precision = (i+1)*1.0/(rows_good[i]+1)
+
         if rows_good[i] != 0:
             old_precision = i*1.0/rows_good[i]
         else:
             old_precision = 1.0
         average_precision += d_recall*(old_precision + precision)/2
+    # else:
+    #     average_precision = 0
 
     return average_precision, cmc
 

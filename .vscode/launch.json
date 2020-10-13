@@ -8,20 +8,26 @@
       "name": "Execution Mode: mtmct_reid - Market",
       "type": "python",
       "request": "launch",
-      "program": "${file}",
+      "program": "${file}/mtmct_reid/main.py",
       "console": "integratedTerminal",
       "pythonArgs": ["-W", "ignore::UserWarning::0"],
       "args": [
         "--data_dir",
-        "data\\raw\\Market-1501-v15.09.15",
+        "data/raw/Market-1501-v15.09.15",
         "--st_distribution",
-        "data\\raw\\Market-1501-v15.09.15\\st_distribution.pkl",
+        "data/raw/Market-1501-v15.09.15/st_distribution.pkl",
         "--gpus",
         "1",
         "--max_epochs",
         "60",
         "--precision",
-        "16"
+        "16",
+        "train_batchsize",
+        "64",
+        "val_batchsize",
+        "64",
+        "test_batchsize",
+        "64"
         // "--profiler",
         // "True"
       ]
@@ -30,20 +36,26 @@
       "name": "Execution Mode: mtmct_reid - Duke",
       "type": "python",
       "request": "launch",
-      "program": "${file}",
+      "program": "${file}/mtmct_reid/main.py",
       "console": "integratedTerminal",
       "pythonArgs": ["-W", "ignore::UserWarning::0"],
       "args": [
         "--data_dir",
-        "data\\raw\\DukeMTMC-reID",
+        "data/raw/DukeMTMC-reID",
         "--st_distribution",
-        "data\\raw\\DukeMTMC-reID\\st_distribution.pkl",
+        "data/raw/DukeMTMC-reID/st_distribution.pkl",
         "--gpus",
         "1",
         "--max_epochs",
         "60",
         "--precision",
-        "16"
+        "16",
+        "train_batchsize",
+        "64",
+        "val_batchsize",
+        "64",
+        "test_batchsize",
+        "64"
         // "--profiler",
         // "True"
       ]
@@ -57,9 +69,9 @@
       "pythonArgs": ["-W", "ignore::UserWarning::0"],
       "args": [
         "--data_dir",
-        "data\\raw\\Market-1501-v15.09.15",
+        "data/raw/Market-1501-v15.09.15",
         "--st_distribution",
-        "data\\raw\\Market-1501-v15.09.15\\st_distribution.pkl",
+        "data/raw/Market-1501-v15.09.15/st_distribution.pkl",
         "--gpus",
         "1",
         "--max_epochs",
@@ -71,11 +83,11 @@
         "--limit_test_batches",
         "0.005",
         "--precision",
-        "16"
+        "16",
         // "--save_distribution",
         // "\"\""
-        // "--profiler",
-        // "True"
+        "--profiler",
+        "True"
       ]
     },
     {
@@ -87,7 +99,9 @@
       "pythonArgs": ["-W", "ignore::UserWarning::0"],
       "args": [
         "--data_dir",
-        "data\\raw\\DukeMTMC-reID",
+        "data/raw/DukeMTMC-reID",
+        "--st_distribution",
+        "data/raw/DukeMTMC-reID/st_distribution.pkl",
         "--gpus",
         "1",
         "--max_epochs",
