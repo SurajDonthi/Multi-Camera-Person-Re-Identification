@@ -10,6 +10,7 @@ from pytorch_lightning.loggers.test_tube import TestTubeLogger
 
 from data import ReIDDataModule
 from engine import ST_ReID
+from utils import save_args
 
 
 def main(args):
@@ -23,13 +24,16 @@ def main(args):
                                      monitor='Loss/val_loss',
                                      save_last=True,
                                      mode='min',
-                                     save_top_k=10
+                                     save_top_k=10,
                                      )
 
     data_module = ReIDDataModule.from_argparse_args(args)
 
     model = ST_ReID(data_module.num_classes, learning_rate=args.learning_rate,
                     criterion=args.criterion, rerank=args.rerank)
+
+    # ToDo: Also find a way to save num_classes
+    save_args(args, tb_logger.save_dir)
 
     trainer = Trainer.from_argparse_args(args, logger=[tb_logger, tt_logger],
                                          checkpoint_callback=chkpt_callback,
@@ -47,6 +51,6 @@ if __name__ == "__main__":
     parser = Trainer.add_argparse_args(parser)
     args = parser.parse_args()
 
-    print(f'Arguments: \n{args}\n')
+    print(f'\nArguments: \n{args}\n')
 
-    main(args)
+    # main(args)

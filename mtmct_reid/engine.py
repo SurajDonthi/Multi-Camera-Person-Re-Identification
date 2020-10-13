@@ -34,7 +34,7 @@ class ST_ReID(PCB, pl.LightningModule):
         self.criterion = LOSSES[criterion]
         self.rerank = rerank
 
-        self.save_hyperparameters()
+        # self.save_hyperparameters()
 
     @ staticmethod   # @classmethod not required as
     def add_model_specific_args(parent_parser):

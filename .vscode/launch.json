@@ -5,10 +5,10 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Execution Mode: mtmct_reid - Market",
+      "name": "Training Mode: mtmct_reid - Market",
       "type": "python",
       "request": "launch",
-      "program": "${file}/mtmct_reid/main.py",
+      "program": "${workspaceFolder}/mtmct_reid/main.py",
       "console": "integratedTerminal",
       "pythonArgs": ["-W", "ignore::UserWarning::0"],
       "args": [
@@ -21,22 +21,22 @@
         "--max_epochs",
         "60",
         "--precision",
-        "16",
-        "train_batchsize",
-        "64",
-        "val_batchsize",
-        "64",
-        "test_batchsize",
-        "64"
+        "16"
+        // "train_batchsize",
+        // "64",
+        // "val_batchsize",
+        // "64",
+        // "test_batchsize",
+        // "64"
         // "--profiler",
         // "True"
       ]
     },
     {
-      "name": "Execution Mode: mtmct_reid - Duke",
+      "name": "Training Mode: mtmct_reid - Duke",
       "type": "python",
       "request": "launch",
-      "program": "${file}/mtmct_reid/main.py",
+      "program": "${workspaceFolder}/mtmct_reid/main.py",
       "console": "integratedTerminal",
       "pythonArgs": ["-W", "ignore::UserWarning::0"],
       "args": [
@@ -49,13 +49,15 @@
         "--max_epochs",
         "60",
         "--precision",
-        "16",
-        "train_batchsize",
-        "64",
-        "val_batchsize",
-        "64",
-        "test_batchsize",
-        "64"
+        "16"
+        // "--train_batchsize",
+        // "64",
+        // "--val_batchsize",
+        // "64",
+        // "--test_batchsize",
+        // "64",
+        // "--early_stop_callback",
+        // "True"
         // "--profiler",
         // "True"
       ]

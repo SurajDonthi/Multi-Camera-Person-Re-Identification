@@ -1,6 +1,16 @@
+import csv
+from argparse import Namespace
+
 import matplotlib.pyplot as plt
-# import numpy as np
 import torch
+
+
+def save_args(args: Namespace, save_dir: str) -> None:
+    with open(save_dir + 'hparams.csv', 'w') as f:
+        csvw = csv.writer(f)
+        csvw.writerow(['hparam', 'value'])
+        for k, v in args.__dict__.items():
+            csvw.writerow([k, v])
 
 
 def get_ids(img_paths: list, dataset: str) -> tuple:
