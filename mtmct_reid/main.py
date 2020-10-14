@@ -33,7 +33,7 @@ def main(args):
                     criterion=args.criterion, rerank=args.rerank)
 
     # ToDo: Also find a way to save num_classes
-    save_args(args, tb_logger.save_dir)
+    save_args(args, tb_logger.root_dir)
 
     trainer = Trainer.from_argparse_args(args, logger=[tb_logger, tt_logger],
                                          checkpoint_callback=chkpt_callback,
@@ -53,4 +53,4 @@ if __name__ == "__main__":
 
     print(f'\nArguments: \n{args}\n')
 
-    # main(args)
+    main(args)

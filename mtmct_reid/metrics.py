@@ -215,8 +215,7 @@ def AP_CMC(scores, query_target, query_cam, gallery_targets,
         else:
             old_precision = 1.0
         average_precision += d_recall*(old_precision + precision)/2
-    # else:
-    #     average_precision = 0
+
 
     return average_precision, cmc
 

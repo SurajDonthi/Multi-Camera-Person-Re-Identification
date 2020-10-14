@@ -21,15 +21,16 @@
         "--max_epochs",
         "60",
         "--precision",
-        "16"
-        // "train_batchsize",
-        // "64",
-        // "val_batchsize",
-        // "64",
-        // "test_batchsize",
-        // "64"
-        // "--profiler",
-        // "True"
+        "16",
+        "",
+        "--train_batchsize",
+        "64",
+        "--val_batchsize",
+        "64",
+        "--test_batchsize",
+        "64",
+        "--profiler",
+        "True"
       ]
     },
     {

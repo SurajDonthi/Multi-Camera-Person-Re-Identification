@@ -65,7 +65,7 @@ class ReIDDataModule(pl.LightningDataModule):
                  query_subdir: str = 'query', train_batchsize: int = 16,
                  val_batchsize: int = 16, test_batchsize: int = 16,
                  num_workers: int = 4,
-                 color_jitter: bool = False, random_erasing: float = 0.0,
+                 random_erasing: float = 0.0, color_jitter: bool = False,
                  save_distribution: Optional[str] = None):
 
         super().__init__()
@@ -108,10 +108,10 @@ class ReIDDataModule(pl.LightningDataModule):
         transform = transforms.Compose(transforms_list)
         self.train_data = ReIDDataset(self.train_dir, transform)
         self.num_classes = len(self.train_data.classes)
-        train_size = int(0.8 * self.train_data.num_samples)
-        val_size = self.train_data.num_samples - train_size
-        self.train_data, self.val_data = random_split(
-            self.train_data, [train_size, val_size])
+        # train_size = int(0.8 * self.train_data.num_samples)
+        # val_size = self.train_data.num_samples - train_size
+        # self.train_data, self.val_data = random_split(
+        #     self.train_data, [train_size, val_size])
         self.query = ReIDDataset(self.query_dir, transform)
         self.gallery = ReIDDataset(self.test_dir, transform)
 
@@ -138,7 +138,8 @@ class ReIDDataModule(pl.LightningDataModule):
                 raise ValueError('File must be of type .pkl')
 
             print(
-                f'\nLoading Spatial-Temporal Distribution from {self.st_distribution}.\n\n')
+                f'\nLoading Spatial-Temporal Distribution from \
+                {self.st_distribution}.\n\n')
             self.st_distribution = joblib.load(self.st_distribution)
 
     def _save_st_distribution(self):
@@ -153,17 +154,7 @@ class ReIDDataModule(pl.LightningDataModule):
                           pin_memory=True)
 
     def val_dataloader(self):
-        transform = transforms.Compose([
-            # Image.BICUBIC
-            transforms.Resize(size=(384, 192), interpolation=3),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
-        self.val_data.dataset.transform = transform
-
-        return DataLoader(self.val_data, batch_size=self.val_batchsize,
-                          shuffle=True, num_workers=self.num_workers,
-                          pin_memory=True)
+        return self.test_dataloader()
 
     def test_dataloader(self):
         transform = transforms.Compose([
