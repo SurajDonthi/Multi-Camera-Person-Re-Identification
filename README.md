@@ -6,10 +6,10 @@ This repository has been trained & tested on DukeMTMTC-reID and Market-1501 data
 
 Below are the metrics on the various datasets.
 
-| Model               | Size | mAP  | CMC: Top1 | CMC: Top5 |
-| ------------------- | ---- | ---- | --------- | --------- |
-| `resnet50-PCB`      |      | 95.1 | 89.8      | 93.2      |
-| `resnet50-ft_dense` |      |      |           |           |
+| Model               | Size | Dataset | mAP  | CMC: Top1 | CMC: Top5 |
+| ------------------- | ---- | ------- | ---- | --------- | --------- |
+| `resnet50-PCB`      |      | Market  | 95.1 | 89.8      | 93.2      |
+| `resnet50-ft_dense` |      | Market  |      |           |           |
 
 ## Training with your own dataset
 
