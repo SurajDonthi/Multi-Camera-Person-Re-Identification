@@ -200,7 +200,7 @@ def AP_CMC(score, query_target, query_cam, gallery_targets,
 
     # if ngood > 0:
     mask = np.in1d(index, good_index)
-    rows_good = np.argwhere(mask is True)
+    rows_good = np.argwhere(mask == True)
     rows_good = rows_good.flatten()
 
     cmc[rows_good[0]:] = 1
