@@ -117,7 +117,7 @@ class ST_ReID(PCB, pl.LightningModule):
 
         return loss, acc
 
-    def evaluation_metrics(self, outputs):
+    def evaluation_metrics(self):
         self.q_features = l2_norm_standardize(self.q_features)
         self.g_features = l2_norm_standardize(self.g_features)
 
@@ -137,18 +137,17 @@ class ST_ReID(PCB, pl.LightningModule):
                            self.g_targets,
                            self.g_cam_ids)
 
-        avg_loss = torch.mean(outputs[0])
-        avg_acc = torch.mean(outputs[1])
-
-        return avg_loss, avg_acc, mean_ap, cmc
+        return mean_ap, cmc
 
     # Training
     def training_step(self, batch, batch_idx):
         loss, acc = self.shared_step(batch, batch_idx)
 
         logs = {'Loss/train_loss': loss, 'Accuracy/train_acc': acc}
-        self.log_dict(logs, prog_bar=True)
-        return loss, acc
+
+        result = pl.TrainResult(loss)
+        result.log_dict(logs, prog_bar=True)
+        return result
 
     # Validation
     def on_validation_epoch_start(self) -> None:
@@ -170,8 +169,13 @@ class ST_ReID(PCB, pl.LightningModule):
         result.log_dict(logs, prog_bar=True)
         return result
 
-    def validation_epoch_end(self, outputs: List[Any]) -> None:
-        avg_loss, avg_acc, mean_ap, cmc = self.evaluation_metrics(outputs)
+    def validation_epoch_end(self, outputs) -> pl.EvalResult:
+        mean_ap, cmc = self.evaluation_metrics()
+
+        avg_loss = torch.mean((outputs[0]['Loss/val_loss'] +
+                               outputs[1]['Loss/val_loss']) / 2)
+        avg_acc = torch.mean((outputs[0]['Accuracy/val_acc'] +
+                              outputs[1]['Accuracy/val_acc']) / 2)
 
         mAP_logs = {'Results/val_mAP': mean_ap,
                     'Results/val_CMC_top1': cmc[0].tolist(),
@@ -207,14 +211,19 @@ class ST_ReID(PCB, pl.LightningModule):
         result.log_dict(logs, prog_bar=True)
         return result
 
-    def test_epoch_end(self, outputs: List[Any]) -> None:
+    def test_epoch_end(self, outputs: List[Any]) -> pl.EvalResult:
 
         fig = plot_distributions(self.trainer.datamodule.st_distribution)
 
         self.logger[0].experiment.add_figure('Spatial-Temporal Distribution',
                                              fig)
 
-        avg_loss, avg_acc, mean_ap, cmc = self.evaluation_metrics(outputs)
+        mean_ap, cmc = self.evaluation_metrics()
+
+        avg_loss = torch.mean((outputs[0]['Loss/test_loss'] +
+                               outputs[1]['Loss/test_loss']) / 2)
+        avg_acc = torch.mean((outputs[0]['Accuracy/test_acc'] +
+                              outputs[1]['Accuracy/test_acc']) / 2)
 
         mAP_logs = {'Results/test_mAP': mean_ap,
                     'Results/test_CMC_top1': cmc[0].tolist(),
@@ -224,7 +233,7 @@ class ST_ReID(PCB, pl.LightningModule):
                'Results/test_accuracy': avg_acc.tolist(),
                }
 
-        out = {**log, **mAP_logs}
+        out = {**log, **mAP_logs, 'step': self.current_epoch}
 
         result = pl.EvalResult()
         result.log_dict(out)
