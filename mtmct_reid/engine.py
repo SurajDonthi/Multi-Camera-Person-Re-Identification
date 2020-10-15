@@ -28,6 +28,7 @@ class ST_ReID(PCB, pl.LightningModule):
 
         super().__init__(num_classes)
 
+        self.num_classes = num_classes
         self.learning_rate = learning_rate
         self.criterion = LOSSES[criterion]
         self.rerank = rerank
@@ -165,8 +166,9 @@ class ST_ReID(PCB, pl.LightningModule):
         loss, acc = self.eval_shared_step(batch, batch_idx, dataloader_idx)
 
         logs = {'Loss/val_loss': loss, 'Accuracy/val_acc': acc}
-        self.log_dict(logs, prog_bar=True)
-        return loss, acc
+        result = pl.EvalResult(early_stop_on=loss)
+        result.log_dict(logs, prog_bar=True)
+        return result
 
     def validation_epoch_end(self, outputs: List[Any]) -> None:
         avg_loss, avg_acc, mean_ap, cmc = self.evaluation_metrics(outputs)
@@ -180,8 +182,9 @@ class ST_ReID(PCB, pl.LightningModule):
                **mAP_logs}
 
         out = {**log, **mAP_logs, 'step': self.current_epoch}
-
-        self.log_dict(out)
+        result = pl.EvalResult()
+        result.log_dict(out)
+        return result
 
     # Testing
     def on_test_epoch_start(self) -> None:
@@ -199,9 +202,10 @@ class ST_ReID(PCB, pl.LightningModule):
         loss, acc = self.eval_shared_step(batch, batch_idx, dataloader_idx)
 
         logs = {'Loss/test_loss': loss, 'Accuracy/test_acc': acc}
-        self.log_dict(logs, prog_bar=True)
 
-        return loss, acc
+        result = pl.EvalResult()
+        result.log_dict(logs, prog_bar=True)
+        return result
 
     def test_epoch_end(self, outputs: List[Any]) -> None:
 
@@ -222,4 +226,6 @@ class ST_ReID(PCB, pl.LightningModule):
 
         out = {**log, **mAP_logs}
 
-        self.log_dict(out)
+        result = pl.EvalResult()
+        result.log_dict(out)
+        return result

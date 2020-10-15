@@ -157,14 +157,14 @@ def joint_scores(query_features, query_cams, query_frames,
 # Step 4
 
 
-def AP_CMC(scores, query_target, query_cam, gallery_targets,
+def AP_CMC(score, query_target, query_cam, gallery_targets,
            gallery_cams):
     """
     Compute CMC & mAP
     """
     # region I N D I C E S
     # Order by scores
-    index = np.argsort(scores)
+    index = np.argsort(score)
     # index = index[::-1]
 
     # good index
@@ -216,7 +216,6 @@ def AP_CMC(scores, query_target, query_cam, gallery_targets,
             old_precision = 1.0
         average_precision += d_recall*(old_precision + precision)/2
 
-
     return average_precision, cmc
 
 
@@ -228,8 +227,8 @@ def mAP(scores, query_targets, query_cams, gallery_targets, gallery_cams):
 
     ap = 0.0
     # print(query_label)
-    for query_target, query_cam in zip(query_targets, query_cams):
-        ap_tmp, CMC_tmp = AP_CMC(scores, query_target, query_cam,
+    for score, query_target, query_cam in zip(scores, query_targets, query_cams):
+        ap_tmp, CMC_tmp = AP_CMC(score, query_target, query_cam,
                                  gallery_targets, gallery_cams)
 
         if CMC_tmp[0] == -1:
