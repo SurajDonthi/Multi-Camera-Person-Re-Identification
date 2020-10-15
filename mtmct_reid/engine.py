@@ -80,7 +80,7 @@ class ST_ReID(PCB, pl.LightningModule):
 
         y_pred = torch.stack(parts_proba, dim=0).sum(dim=0)
         _, y_pred = torch.max(y_pred, dim=1)
-        acc = accuracy(y_pred, y)
+        acc = torch.mean((y == y_pred).type(torch.float16))
 
         return loss, acc
 

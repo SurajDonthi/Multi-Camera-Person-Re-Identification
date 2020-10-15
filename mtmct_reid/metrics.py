@@ -149,7 +149,8 @@ def joint_scores(query_features, query_cams, query_frames,
         score = 1/(1+torch.exp(-alpha*feature_score)) * \
             1/(1+2*torch.exp(-alpha*st_score))
 
-        scores = torch.cat([scores, score])   # all_scores
+        scores = torch.cat(
+            [scores, torch.unsqueeze(score, dim=0)])   # all_scores
 
     # Size: k * n; k -> Num. of Query Instansces
     return scores
