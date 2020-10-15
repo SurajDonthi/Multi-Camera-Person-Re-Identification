@@ -29,11 +29,11 @@
         "--train_batchsize",
         "64",
         "--val_batchsize",
-        "64",
+        "8",
         "--test_batchsize",
-        "64",
+        "8",
         "--limit_val_batches",
-        "0.1",
+        "0.01",
         "--profiler",
         "True"
       ]

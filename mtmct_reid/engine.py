@@ -181,8 +181,8 @@ class ST_ReID(PCB, pl.LightningModule):
                     'Results/val_CMC_top1': cmc[0].tolist(),
                     'Results/val_CMC_top5': cmc[4].tolist()}
 
-        log = {'Results/val_loss': avg_loss.tolist(),
-               'Results/val_accuracy': avg_acc.tolist(),
+        log = {'Loss/avg_val_loss': avg_loss.tolist(),
+               'Accuracy/avg_val_accuracy': avg_acc.tolist(),
                **mAP_logs}
 
         out = {**log, **mAP_logs, 'step': self.current_epoch}
@@ -229,8 +229,8 @@ class ST_ReID(PCB, pl.LightningModule):
                     'Results/test_CMC_top1': cmc[0].tolist(),
                     'Results/test_CMC_top5': cmc[4].tolist()}
 
-        log = {'Results/test_loss': avg_loss.tolist(),
-               'Results/test_accuracy': avg_acc.tolist(),
+        log = {'Loss/avg_test_loss': avg_loss.tolist(),
+               'Accuracy/avg_test_accuracy': avg_acc.tolist(),
                }
 
         out = {**log, **mAP_logs}
