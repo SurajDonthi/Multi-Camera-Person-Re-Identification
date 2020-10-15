@@ -32,6 +32,8 @@
         "64",
         "--test_batchsize",
         "64",
+        "--limit_val_batches",
+        "0.1",
         "--profiler",
         "True"
       ]

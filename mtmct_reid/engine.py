@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
-from pytorch_lightning.metrics.functional import accuracy
+# from pytorch_lightning.metrics.functional import accuracy
 from torch.optim import lr_scheduler
 from torch.optim.sgd import SGD
 from typing import Any, List
@@ -172,10 +172,10 @@ class ST_ReID(PCB, pl.LightningModule):
     def validation_epoch_end(self, outputs) -> pl.EvalResult:
         mean_ap, cmc = self.evaluation_metrics()
 
-        avg_loss = torch.mean((outputs[0]['Loss/val_loss'] +
-                               outputs[1]['Loss/val_loss']) / 2)
-        avg_acc = torch.mean((outputs[0]['Accuracy/val_acc'] +
-                              outputs[1]['Accuracy/val_acc']) / 2)
+        avg_loss = (torch.mean(outputs[0]['Loss/val_loss']) +
+                    torch.mean(outputs[1]['Loss/val_loss']) / 2)
+        avg_acc = (torch.mean(outputs[0]['Accuracy/val_acc']) +
+                   torch.mean(outputs[1]['Accuracy/val_acc']) / 2)
 
         mAP_logs = {'Results/val_mAP': mean_ap,
                     'Results/val_CMC_top1': cmc[0].tolist(),
@@ -220,10 +220,10 @@ class ST_ReID(PCB, pl.LightningModule):
 
         mean_ap, cmc = self.evaluation_metrics()
 
-        avg_loss = torch.mean((outputs[0]['Loss/test_loss'] +
-                               outputs[1]['Loss/test_loss']) / 2)
-        avg_acc = torch.mean((outputs[0]['Accuracy/test_acc'] +
-                              outputs[1]['Accuracy/test_acc']) / 2)
+        avg_loss = (torch.mean(outputs[0]['Loss/test_loss']) +
+                    torch.mean(outputs[1]['Loss/test_loss']) / 2)
+        avg_acc = (torch.mean(outputs[0]['Accuracy/test_acc']) +
+                   torch.mean(outputs[1]['Accuracy/test_acc']) / 2)
 
         mAP_logs = {'Results/test_mAP': mean_ap,
                     'Results/test_CMC_top1': cmc[0].tolist(),
@@ -233,7 +233,7 @@ class ST_ReID(PCB, pl.LightningModule):
                'Results/test_accuracy': avg_acc.tolist(),
                }
 
-        out = {**log, **mAP_logs, 'step': self.current_epoch}
+        out = {**log, **mAP_logs}
 
         result = pl.EvalResult()
         result.log_dict(out)
