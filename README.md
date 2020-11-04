@@ -14,7 +14,7 @@ Below are the metrics on the various datasets.
 
 ## Dependencies
 
-This project requires `pytorch>=1.3`, `pytorch-lightning=0.9.0`, `torchvision=0.7.0`, `pathlib2`, `joblib` and other common packages like `numpy`, `matplotlib` and `csv`
+This project requires `pytorch>=1.3`, `pytorch-lightning=0.9.0`, `torchvision=0.7.0`, `tensorboard=2.2.0`, `pathlib2`, `joblib` and other common packages like `numpy`, `matplotlib` and `csv`
 
 ## Getting Started
 
@@ -25,11 +25,21 @@ You can get started by training this model. Trained models will be available soo
 
 #### Train with your own dataset
 
+Run the below command in the shell.
+
 ```sh
 python mtmct_reid/main.py --data_dir path/to/dataset/ --save_distribution path/to/dataset/st_distribution.pkl --gpus 1 --max_epochs 60
 ```
-
 For a detailed list of arguments you can pass, refer to `hparams.csv`.
+
+
+#### Monitor the training on Tensorboard
+
+Log files are created to track the training in a new folder `lightning_logs`. To monitor the training, run the below command in the shell
+
+```sh
+tensorboard --logdir lightning_logs/
+```
 
 References:
 
