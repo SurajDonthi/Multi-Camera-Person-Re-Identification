@@ -14,7 +14,7 @@ Below are the metrics on the various datasets.
 
 ## Dependencies
 
-This project requires `pytorch>=1.3`, `pytorch-lightning=0.9.0`, `torchvision`, `pathlib2`, `joblib` and other common packages like `numpy`, `matplotlib` and `csv`
+This project requires `pytorch>=1.3`, `pytorch-lightning=0.9.0`, `torchvision=0.7.0`, `pathlib2`, `joblib` and other common packages like `numpy`, `matplotlib` and `csv`
 
 ## Getting Started
 
