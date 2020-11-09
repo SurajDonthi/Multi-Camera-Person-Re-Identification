@@ -3,6 +3,9 @@
 .idea/
 .history/
 
+# VS Code
+.vscode/settings.json
+
 # Vagrant
 .vagrant/
 
