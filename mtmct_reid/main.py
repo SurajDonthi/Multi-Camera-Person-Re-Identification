@@ -32,7 +32,7 @@ def main(args):
     model = ST_ReID(data_module.num_classes, learning_rate=args.learning_rate,
                     criterion=args.criterion, rerank=args.rerank)
 
-    # ToDo: Also find a way to save num_classes
+    # ToDo: Find a more efficient way to save num_classes
     save_args(args, tb_logger.log_dir)
 
     trainer = Trainer.from_argparse_args(args, logger=[tb_logger, tt_logger],

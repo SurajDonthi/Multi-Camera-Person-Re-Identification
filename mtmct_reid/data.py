@@ -16,11 +16,13 @@ from utils import get_ids
 
 class ReIDDataset(Dataset):
 
-    def __init__(self, data_dir: str, transform=None, target_transform=None):
+    def __init__(self, data_dir: str, transform=None, target_transform=None,
+                 ret_camid_n_frame: bool = False):
         super(ReIDDataset, self).__init__()
         self.data_dir = str(data_dir)
         self.transform = transform
         self.target_transform = target_transform
+        self.ret_camid_n_frame = ret_camid_n_frame
         self._init_data()
 
     def _init_data(self):
@@ -44,17 +46,19 @@ class ReIDDataset(Dataset):
 
     def __getitem__(self, index):
         sample = Image.open(self.imgs[index]).convert('RGB')
-        # ToDo:
         target = self.targets[index]
-        cam_id = self.cam_ids[index]
-        frame = self.frames[index]
 
         if self.transform:
             sample = self.transform(sample)
         if self.target_transform:
             target = self.target_transform(target)
 
-        return sample, target, cam_id, frame
+        if self.ret_camid_n_frame:
+            cam_id = self.cam_ids[index]
+            frame = self.frames[index]
+            return sample, target, cam_id, frame
+
+        return sample, target
 
 
 class ReIDDataModule(pl.LightningDataModule):
@@ -108,11 +112,14 @@ class ReIDDataModule(pl.LightningDataModule):
         transform = transforms.Compose(transforms_list)
         self.train_data = ReIDDataset(self.train_dir, transform)
         self.num_classes = len(self.train_data.classes)
+
+        # Data Split
         # train_size = int(0.8 * self.train_data.num_samples)
         # val_size = self.train_data.num_samples - train_size
         # self.train_data, self.val_data = random_split(
         #     self.train_data, [train_size, val_size])
-        self.query = ReIDDataset(self.query_dir, transform)
+
+        # self.query = ReIDDataset(self.query_dir, transform)
         self.gallery = ReIDDataset(self.test_dir, transform)
 
         self._load_st_distribution()
@@ -163,14 +170,15 @@ class ReIDDataModule(pl.LightningDataModule):
             transforms.ToTensor(),
             transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
-        self.query.transform = transform
+        # self.query.transform = transform
         self.gallery.transform = transform
 
-        query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
-                                  shuffle=False, num_workers=self.num_workers,
-                                  pin_memory=True)
+        # query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
+        #                           shuffle=False, num_workers=self.num_workers,
+        #                           pin_memory=True)
         gall_loader = DataLoader(self.gallery, batch_size=self.test_batchsize,
                                  shuffle=False, num_workers=self.num_workers,
                                  pin_memory=True)
 
-        return [query_loader, gall_loader]
+        # return [query_loader, gall_loader]
+        return gall_loader
