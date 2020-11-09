@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from typing import Any, List
 
 import pytorch_lightning as pl
 import torch
@@ -6,13 +7,11 @@ import torch.nn.functional as F
 # from pytorch_lightning.metrics.functional import accuracy
 from torch.optim import lr_scheduler
 from torch.optim.sgd import SGD
-from typing import Any, List
 
 from metrics import joint_scores, mAP
 from model import PCB
 from re_ranking import re_ranking
 from utils import fliplr, l2_norm_standardize, plot_distributions
-
 
 LOSSES = {'bce': F.binary_cross_entropy,
           'bce_logits': F.binary_cross_entropy_with_logits,
