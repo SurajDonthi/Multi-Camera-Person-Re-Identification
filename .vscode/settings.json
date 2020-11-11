@@ -1,8 +1,0 @@
-{
-  "python.pythonPath": "/usr/bin/python3",
-  "python.linting.pylintEnabled": false,
-  "python.linting.flake8Enabled": true,
-  "python.linting.enabled": true,
-  "python.envFile": "${workspaceFolder}/.vscode/.env",
-  "python.analysis.extraPaths": ["${workspaceFolder}/mtmct_reid/"]
-}
