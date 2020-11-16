@@ -16,6 +16,8 @@ Below are the metrics on the various datasets.
 
 This project requires `pytorch>=1.3`, `pytorch-lightning=0.9.0`, `torchvision=0.7.0`, `tensorboard=2.2.0`, `pathlib2`, `joblib` and other common packages like `numpy`, `matplotlib` and `csv`.
 
+NOTE: This project uses uses [pytorch-lightning](https://pytorch-lightning.readthedocs.io/en/latest/introduction_guide.html) which is a high-level interface to abstract away repeating Pytorch code. It helps achieve clean, and easy to maintain code.
+
 ## Getting Started
 
 1. Clone this repo & cd into it: `git clone https://github.com/SurajDonthi/MTMCT-Person-Re-Identification; cd MTMCT-Person-Re-Identification`
