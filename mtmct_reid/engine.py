@@ -23,7 +23,8 @@ LOSSES = {'bce': F.binary_cross_entropy,
 class ST_ReID(PCB, pl.LightningModule):
 
     def __init__(self, num_classes, learning_rate: float = 0.1,
-                 criterion: str = 'cross_entropy', rerank: bool = False):
+                 criterion: str = 'cross_entropy', rerank: bool = False,
+                 save_features: bool = True):
 
         super().__init__(num_classes)
 
@@ -45,6 +46,8 @@ class ST_ReID(PCB, pl.LightningModule):
                             default='cross_entropy')
         parser.add_argument('-re', '--rerank',
                             type=bool, default=False)
+        parser.add_argument('-sfe', '--save_features',
+                            type=bool, default=True)
         return parser
 
     def configure_optimizers(self):
@@ -85,6 +88,9 @@ class ST_ReID(PCB, pl.LightningModule):
 
         return loss, acc
 
+    # The only problem with this implementation is that it takes a lot of time to process all the images in query and gallery. Also while the query size can be very minimal, the gallery size has to be very significant. Else the results won't be accurate!
+    # ? Will there be memory overrun issues?
+
     def eval_shared_step(self, batch, batch_idx, dataloader_idx):
         X, y, cam_ids, frames = batch
 
@@ -94,6 +100,7 @@ class ST_ReID(PCB, pl.LightningModule):
             feature_sum += features
             X = fliplr(X, self.device)
 
+        # ? Should we just add && batch_idx < 2 for this (for evaluation)?
         if dataloader_idx == 0:
 
             self.q_features = torch.cat([self.q_features, feature_sum])
@@ -104,6 +111,7 @@ class ST_ReID(PCB, pl.LightningModule):
             self.q_frames = torch.cat(
                 [self.q_frames, frames.detach().cpu()])
 
+        # ? Should we just add && batch_idx ~=75% of batches for this (for evaluation)?
         elif dataloader_idx == 1:
 
             self.g_features = torch.cat([self.g_features, feature_sum])
@@ -118,6 +126,7 @@ class ST_ReID(PCB, pl.LightningModule):
 
         return loss, acc
 
+    # ! The crazy values of metrics that we are getting is because of the
     def evaluation_metrics(self):
         self.q_features = l2_norm_standardize(self.q_features)
         self.g_features = l2_norm_standardize(self.g_features)
@@ -170,7 +179,7 @@ class ST_ReID(PCB, pl.LightningModule):
         result.log_dict(logs, prog_bar=True)
         return result
 
-    def validation_epoch_end(self, outputs) -> pl.EvalResult:
+    def _validation_epoch_end(self, outputs) -> pl.EvalResult:
         # mean_ap, cmc = self.evaluation_metrics()
 
         # avg_loss = (torch.mean(outputs[0]['Loss/val_loss']) +
