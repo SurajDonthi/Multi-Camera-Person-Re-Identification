@@ -33,7 +33,7 @@ Run the below command in the shell.
 python mtmct_reid/main.py --data_dir path/to/dataset/ --save_distribution path/to/dataset/st_distribution.pkl --gpus 1 --max_epochs 60
 ```
 
-For a detailed list of arguments you can pass, refer to `hparams.csv`.
+For a detailed list of arguments you can pass, refer to [`hparams.csv`](https://github.com/SurajDonthi/MTMCT-Person-Re-Identification/blob/master/hparams.csv)
 
 #### Monitor the training on Tensorboard
 
