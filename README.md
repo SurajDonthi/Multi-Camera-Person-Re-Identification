@@ -16,7 +16,7 @@ Below are the metrics on the various datasets.
 
 This project requires `pytorch>=1.3`, `pytorch-lightning=0.9.0`, `torchvision=0.7.0`, `tensorboard=2.2.0`, `pathlib2`, `joblib` and other common packages like `numpy`, `matplotlib` and `csv`.
 
-NOTE: This project uses uses [pytorch-lightning](https://pytorch-lightning.readthedocs.io/en/latest/introduction_guide.html) which is a high-level interface to abstract away repeating Pytorch code. It helps achieve clean, and easy to maintain code.
+NOTE: This project uses uses [pytorch-lightning](https://pytorch-lightning.readthedocs.io/en/latest/introduction_guide.html) which is a high-level interface to abstract away repeating Pytorch code. It helps achieve clean, & easy to maintain code with hardly any learning curve!
 
 ## Getting Started
 
