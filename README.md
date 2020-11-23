@@ -48,3 +48,6 @@ References:
 [1] - [Spatial-Temporal Reidentification(ST-ReID)](https://arxiv.org/pdf/1812.03282.pdf)
 
 [2] - [Beyond Parts Models: Person Retrieval with Refined Part Pooling](https://arxiv.org/pdf/1711.09349)
+
+Related repos:
+The model logic is mainly based on this [repository](https://github.com/Wanggcong/Spatial-Temporal-Re-identification).
