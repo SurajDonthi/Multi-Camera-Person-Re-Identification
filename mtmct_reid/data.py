@@ -95,9 +95,9 @@ class ReIDDataModule(pl.LightningDataModule):
             raise Exception(
                 f"Path '{self.data_dir.__str__()}' is not a directory!")
 
-        self.train_dir = data_dir / train_subdir
-        self.test_dir = data_dir / test_subdir
-        self.query_dir = data_dir / query_subdir
+        self.train_dir = self.data_dir / train_subdir
+        self.test_dir = self.data_dir / test_subdir
+        self.query_dir = self.data_dir / query_subdir
 
         self.train_batchsize = train_batchsize
         self.test_batchsize = test_batchsize

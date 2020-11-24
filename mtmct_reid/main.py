@@ -21,7 +21,7 @@ def main(args):
     checkpoint_dir = Path(tb_logger.log_dir) / "checkpoints"
     os.makedirs(checkpoint_dir, exist_ok=True)
     chkpt_callback = ModelCheckpoint(checkpoint_dir,
-                                     monitor='Loss/avg_val_loss',
+                                     monitor='Loss/val_loss',
                                      save_last=True,
                                      mode='min',
                                      save_top_k=10,

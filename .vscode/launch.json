@@ -87,7 +87,7 @@
         "--gpus",
         "1",
         "--max_epochs",
-        "2",
+        "3",
         "--limit_train_batches",
         "0.005",
         "--limit_val_batches",

@@ -134,6 +134,8 @@ class ST_ReID(PCB, pl.LightningModule):
         self.q_features = l2_norm_standardize(self.q_features)
         self.g_features = l2_norm_standardize(self.g_features)
 
+        # Scores against all feature vectors in the gallery image for each
+        # image in the query data.
         scores = joint_scores(self.q_features,
                               self.q_cam_ids,
                               self.q_frames,
@@ -145,6 +147,7 @@ class ST_ReID(PCB, pl.LightningModule):
         if self.rerank:
             scores = re_ranking(scores)
 
+        # Metrics & Evaluation
         mean_ap, cmc = mAP(scores, self.q_targets,
                            self.q_cam_ids,
                            self.g_targets,
