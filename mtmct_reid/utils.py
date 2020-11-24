@@ -1,5 +1,4 @@
 import csv
-import sys
 from argparse import Namespace
 
 import matplotlib.pyplot as plt
@@ -32,10 +31,7 @@ def get_ids(img_paths: list, dataset: str) -> tuple:
 
     for i, path in enumerate(img_paths):
         # File excluding the extension (.jpg)
-        if sys.platform == 'linux':
-            filename = path.split('/')[-1][:-4]
-        elif sys.platform == 'win32':
-            filename = path.split('\\')[-1][:-4]
+        filename = path.stem
 
         if dataset == 'market':
             label, camera_seq, frame, _ = filename.split('_')

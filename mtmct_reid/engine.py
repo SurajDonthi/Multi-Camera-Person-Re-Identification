@@ -88,7 +88,10 @@ class ST_ReID(PCB, pl.LightningModule):
 
         return loss, acc
 
-    # The only problem with this implementation is that it takes a lot of time to process all the images in query and gallery. Also while the query size can be very minimal, the gallery size has to be very significant. Else the results won't be accurate!
+    # The only problem with this implementation is that it takes a lot of
+    # time to process all the images in query and gallery. Also while the
+    # query size can be very minimal, the gallery size has to be very
+    # significant. Else the results won't be accurate!
     # ? Will there be memory overrun issues?
 
     def eval_shared_step(self, batch, batch_idx, dataloader_idx):
@@ -100,7 +103,7 @@ class ST_ReID(PCB, pl.LightningModule):
             feature_sum += features
             X = fliplr(X, self.device)
 
-        # ? Should we just add && batch_idx < 2 for this (for evaluation)?
+        # ? Should we just do batch_idx < 2 for this (for evaluation)?
         if dataloader_idx == 0:
 
             self.q_features = torch.cat([self.q_features, feature_sum])
@@ -111,7 +114,7 @@ class ST_ReID(PCB, pl.LightningModule):
             self.q_frames = torch.cat(
                 [self.q_frames, frames.detach().cpu()])
 
-        # ? Should we just add && batch_idx ~=75% of batches for this (for evaluation)?
+        # ? Should we just do batch_idx ~=75% of batches for this (for eval.)?
         elif dataloader_idx == 1:
 
             self.g_features = torch.cat([self.g_features, feature_sum])
@@ -225,7 +228,7 @@ class ST_ReID(PCB, pl.LightningModule):
         result.log_dict(dictionary=logs, prog_bar=True)
         return result
 
-    def test_epoch_end(self, outputs: List[Any]) -> pl.EvalResult:
+    def _test_epoch_end(self, outputs: List[Any]) -> pl.EvalResult:
 
         fig = plot_distributions(self.trainer.datamodule.st_distribution)
 
