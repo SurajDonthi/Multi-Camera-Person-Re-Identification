@@ -6,7 +6,7 @@ with open("README.md", 'r') as f:
 setup(
     name="mtmct-reid",
     version="0.1.0",
-    description="State-of-the-art top model for person re-identification in Multi-camera Multi-Target Tracking. Benchmarked on Market-1501 and DukeMTMTC-reID datasets.",
+    description="State-of-the-art model for person re-identification in Multi-camera Multi-Target Tracking. Benchmarked on Market-1501 and DukeMTMTC-reID datasets.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Suraj Donthi",
