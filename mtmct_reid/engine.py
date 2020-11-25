@@ -8,10 +8,10 @@ import torch.nn.functional as F
 from torch.optim import lr_scheduler
 from torch.optim.sgd import SGD
 
-from metrics import joint_scores, mAP
-from model import PCB
-from re_ranking import re_ranking
-from utils import fliplr, l2_norm_standardize, plot_distributions
+from .metrics import joint_scores, mAP
+from .model import PCB
+from .re_ranking import re_ranking
+from .utils import fliplr, l2_norm_standardize, plot_distributions
 
 LOSSES = {'bce': F.binary_cross_entropy,
           'bce_logits': F.binary_cross_entropy_with_logits,
