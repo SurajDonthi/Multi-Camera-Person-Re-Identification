@@ -21,7 +21,7 @@ def main(args):
     checkpoint_dir = Path(tb_logger.log_dir) / "checkpoints"
     os.makedirs(checkpoint_dir, exist_ok=True)
     chkpt_callback = ModelCheckpoint(checkpoint_dir,
-                                     monitor='Loss/avg_val_loss',
+                                     monitor='Loss/val_loss',
                                      save_last=True,
                                      mode='min',
                                      save_top_k=10,
@@ -32,7 +32,6 @@ def main(args):
     model = ST_ReID(data_module.num_classes, learning_rate=args.learning_rate,
                     criterion=args.criterion, rerank=args.rerank)
 
-    # ToDo: Also find a way to save num_classes
     save_args(args, tb_logger.log_dir)
 
     trainer = Trainer.from_argparse_args(args, logger=[tb_logger, tt_logger],

@@ -31,7 +31,7 @@ def get_ids(img_paths: list, dataset: str) -> tuple:
 
     for i, path in enumerate(img_paths):
         # File excluding the extension (.jpg)
-        filename = path.split('/')[-1][:-4]
+        filename = path.stem
 
         if dataset == 'market':
             label, camera_seq, frame, _ = filename.split('_')

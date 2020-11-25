@@ -29,11 +29,11 @@
         "--train_batchsize",
         "64",
         "--val_batchsize",
-        "8",
+        "64",
         "--test_batchsize",
-        "8",
+        "64",
         "--limit_val_batches",
-        "0.01",
+        "0.1",
         "--profiler",
         "True"
       ]
@@ -87,7 +87,7 @@
         "--gpus",
         "1",
         "--max_epochs",
-        "1",
+        "3",
         "--limit_train_batches",
         "0.005",
         "--limit_val_batches",
