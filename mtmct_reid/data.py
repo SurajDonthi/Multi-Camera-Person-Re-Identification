@@ -171,9 +171,8 @@ class ReIDDataModule(pl.LightningDataModule):
 
     def _save_st_distribution(self):
         if isinstance(self.save_distribution, str):
-            if self.save_distribution.suffix != '.pkl':
-                self.save_distribution + '.pkl'
-            self.save_distribution = self.save_distribution
+            if '.pkl' not in self.save_distribution:
+                self.save_distribution += '.pkl'
         else:
             self.save_distribution = self.data_dir + 'st_distribution.pkl'
 
@@ -204,7 +203,7 @@ class ReIDDataModule(pl.LightningDataModule):
         #                           shuffle=False, num_workers=self.num_workers,
         #                           pin_memory=True)
         gall_loader = DataLoader(self.gallery, batch_size=self.test_batchsize,
-                                 shuffle=False, num_workers=self.num_workers,
+                                 shuffle=True, num_workers=self.num_workers,
                                  pin_memory=True)
 
         # return [query_loader, gall_loader]

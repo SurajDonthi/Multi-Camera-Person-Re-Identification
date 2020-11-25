@@ -27,13 +27,13 @@
         // "--color_jitter",
         // "True",
         "--train_batchsize",
-        "16",
+        "64",
         "--val_batchsize",
-        "16",
+        "64",
         "--test_batchsize",
-        "16",
-        // "--limit_val_batches",
-        // "0.01",
+        "64",
+        "--limit_val_batches",
+        "0.1",
         "--profiler",
         "True"
       ]
