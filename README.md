@@ -10,27 +10,45 @@ Below are the metrics on the various datasets.
 | --------------------- | ---- | ------- | ---- | --------- | --------- |
 | `resnet50-PCB+rerank` |      | Market  | 95.5 | 98.0      | 98.9      |
 | `resnet50-PCB+rerank` |      | Duke    | 92.7 | 94.5      | 96.8      |
-| `resnet50-ft_dense`   |      | Market  |      |           |           |
+<!---| `resnet50-ft_dense`   |      | Market  |      |           |           |--->
 
-## Dependencies
 
-This project requires `pytorch>=1.3`, `pytorch-lightning=0.9.0`, `torchvision=0.7.0`, `tensorboard=2.2.0`, `pathlib2`, `joblib` and other common packages like `numpy`, `matplotlib` and `csv`.
+## Model Architecture
 
-NOTE: This project uses [pytorch-lightning](https://pytorch-lightning.readthedocs.io/en/latest/introduction_guide.html) which is a high-level interface to abstract away repeating Pytorch code. It helps achieve clean, & easy to maintain code with hardly any learning curve!
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SurajDonthi/Clean-ST-ReID-Multi-Target-Multi-Camera-Tracking/master/imgs/model-architecture.png" width=800 alt="MTMCT ST-ReID Model Architecture">
+  <br>
+  <i>Source: <a href="https://arxiv.org/pdf/1812.03282.pdf">Spatial-Temporal Reidentification(ST-ReID)</a></i>
+</p>
 
 ## Getting Started
 
-1. Clone this repo & cd into it: `git clone https://github.com/SurajDonthi/MTMCT-Person-Re-Identification; cd MTMCT-Person-Re-Identification`
+Run the below commands in the shell.
+
+1. Clone this repo, cd into it & install setup.py: 
+```sh
+git clone https://github.com/SurajDonthi/MTMCT-Person-Re-Identification
+
+cd MTMCT-Person-Re-Identification
+
+pip install setup.py
+```
 2. Download the datasets. (By default you can download & unzip them to `data/raw/` directory)
 
 You can get started by training this model. Trained models will be available soon!
+
+*Dependencies*
+
+This project requires `pytorch>=1.5.0`, `torchvision>=0.6.0`, `pytorch-lightning=0.9.0`, `tensorboard=2.2.0`, `pathlib2`, `joblib` and other common packages like `numpy`, `matplotlib` and `csv`.
+
+NOTE: This project uses [pytorch-lightning](https://pytorch-lightning.readthedocs.io/en/latest/introduction_guide.html) which is a high-level interface to abstract away repeating Pytorch code. It helps achieve clean, & easy to maintain code with hardly any learning curve!
 
 #### Train with your own dataset
 
 Run the below command in the shell.
 
 ```sh
-python mtmct_reid/main.py --data_dir path/to/dataset/ --save_distribution path/to/dataset/st_distribution.pkl --gpus 1 --max_epochs 60
+mtmct_reid --data_dir path/to/dataset/ --save_distribution path/to/dataset/st_distribution.pkl --gpus 1 --max_epochs 60
 ```
 
 For a detailed list of arguments you can pass, refer to [`hparams.csv`](https://github.com/SurajDonthi/MTMCT-Person-Re-Identification/blob/master/hparams.csv)
@@ -42,6 +60,35 @@ Log files are created to track the training in a new folder `lightning_logs`. To
 ```sh
 tensorboard --logdir lightning_logs/
 ```
+
+## Metrics
+
+Finding the best matches during testing:
+ Step 1: From a given dataset, compute it's Spatial-Temporal Distribution.
+ 
+         Requires: cam_ids, targets(labels), frames, MODEL is not required!
+         
+ Step 2: Compute it's Gaussian smoothed ST-Distribution.
+ 
+         Requires: cam_ids, targets(labels), frames, MODEL is not required!
+         
+ Step 3: Compute the L2-Normed features that is generated from the model.
+ 
+         Requires: Features - Performed once training is finished!
+ 
+ Step 4: Compute the Joint Scores.
+ 
+         Requires: Smoothed Distribution & L2-Normed Features, cam_ids, frames
+ 
+ Step 5: Optionally perform Re-ranking of the Generated scores.
+
+         Requires: Joint Scores
+ 
+ Step 6: Compute mAP & CMC (Cumulated Matching Characteristics; for Rank-1,Rank-5, Rank-10) for each query.
+ 
+         Requires: Reranked/Joint Scores, (query labels & cams),
+                   (gallery labels & cams)
+
 
 **References:**
 
