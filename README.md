@@ -64,29 +64,30 @@ tensorboard --logdir lightning_logs/
 ## Metrics
 
 Finding the best matches during testing:
+
  Step 1: From a given dataset, compute it's Spatial-Temporal Distribution.
  
-         Requires: cam_ids, targets(labels), frames, MODEL is not required!
+ >> Requires: cam_ids, targets(labels), frames, MODEL is not required!
          
  Step 2: Compute it's Gaussian smoothed ST-Distribution.
  
-         Requires: cam_ids, targets(labels), frames, MODEL is not required!
+>> Requires: cam_ids, targets(labels), frames, MODEL is not required!
          
  Step 3: Compute the L2-Normed features that is generated from the model.
  
-         Requires: Features - Performed once training is finished!
+>> Requires: Features - Performed once training is finished!
  
  Step 4: Compute the Joint Scores.
  
-         Requires: Smoothed Distribution & L2-Normed Features, cam_ids, frames
+>> Requires: Smoothed Distribution & L2-Normed Features, cam_ids, frames
  
  Step 5: Optionally perform Re-ranking of the Generated scores.
 
-         Requires: Joint Scores
+>> Requires: Joint Scores
  
  Step 6: Compute mAP & CMC (Cumulated Matching Characteristics; for Rank-1,Rank-5, Rank-10) for each query.
  
-         Requires: Reranked/Joint Scores, (query labels & cams),
+>> Requires: Reranked/Joint Scores, (query labels & cams),
                    (gallery labels & cams)
 
 
