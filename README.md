@@ -21,8 +21,22 @@ Below are the metrics on the various datasets.
   <i>Source: <a href="https://arxiv.org/pdf/1812.03282.pdf">Spatial-Temporal Reidentification(ST-ReID)</a></i>
 </p>
 
-## Getting Started
+1. A pre-trained ResNet-50 backbone model with layers up until Adaptive Average Pooling(excluded) is used
 
+**During Training**
+
+> 1. The last Convolutional layer is broken into 6 (Final output size: 6 x 1) parts and separately used for predicting the person label.
+> 2. The total loss of the 6 part predictions are calculated for backpropagation & weights update.
+
+**During Testing/Evaluation/Deployment**
+
+> 1. Only the visual feature stream up until Adaptive Average Pooling is used.
+> 2. The feature vector of the query image is compared against all the feature vectors of the gallery images using a simple dot product & normalization.
+> 3. The Spatio-Temporal distribution is used to calculate their spatio-temporal scores.
+> 4. The joint score is then calculated from the feature score and the spatio-temporal scores.
+> 5. The Cumulated Matching Score is used to find the best matching for person from the gallet set.
+
+## Getting Started
 Run the below commands in the shell.
 
 1. Clone this repo, cd into it & install setup.py: 
@@ -62,6 +76,8 @@ tensorboard --logdir lightning_logs/
 ```
 
 ## Metrics
+
+The evaluation metrics used are mAP (mean Average Precision) & CMC (Cumulated Matching Characteristics)
 
 Finding the best matches during testing:
 
