@@ -12,6 +12,8 @@
       "console": "integratedTerminal",
       "pythonArgs": ["-W", "ignore::UserWarning::0"],
       "args": [
+        "--description",
+        "Experiment description....",
         "--data_dir",
         "data/raw/Market-1501-v15.09.15",
         "--st_distribution",

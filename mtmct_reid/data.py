@@ -7,8 +7,8 @@ from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
-from .metrics import smooth_st_distribution
-from .utils import get_ids
+from metrics import smooth_st_distribution
+from utils import get_ids
 
 
 class ReIDDataset(Dataset):

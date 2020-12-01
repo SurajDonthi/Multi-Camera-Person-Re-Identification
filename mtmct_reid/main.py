@@ -8,9 +8,9 @@ from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.loggers.tensorboard import TensorBoardLogger
 from pytorch_lightning.loggers.test_tube import TestTubeLogger
 
-from .data import ReIDDataModule
-from .engine import ST_ReID
-from .utils import save_args
+from data import ReIDDataModule
+from engine import ST_ReID
+from utils import save_args
 
 
 def main(args):
