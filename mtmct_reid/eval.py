@@ -1,12 +1,13 @@
 from argparse import ArgumentParser
 
+import joblib
 import torch
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
 
 from data import ReIDDataset
-from model import PCB
 from metrics import joint_scores, mAP
+from model import PCB
 from re_ranking import re_ranking
 from utils import fliplr, l2_norm_standardize
 
@@ -55,6 +56,10 @@ def main(args):
     model.load_state_dict(args.model)
     model.eval()
 
+    # Load Spatial-Temporal Distribution
+    st_distribution = joblib.load(args.st_distribution)
+
+    # Generate the feature vectors
     q_features, q_targets, q_cam_ids, q_frames = generate_features(
         model, query_dataloader)
     g_features, g_targets, g_cam_ids, g_frames = generate_features(
@@ -62,7 +67,7 @@ def main(args):
 
     scores = joint_scores(q_features, q_cam_ids, q_frames,
                           g_features, g_cam_ids, g_frames,
-                          args.st_distribution)
+                          st_distribution)
 
     if args.re_rank:
         scores = re_ranking(scores)
@@ -88,9 +93,11 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('-m', '--model_path', type=str,
                         required=True, help="Path to the model")
-    parser.add_argument('-d', '--data_dir', type=str,
-                        required=True, help="Path to the dataset to load")
-    parser.add_argument('-s', '--data_dir', type=str,
+    parser.add_argument('-qd', '--query_data_dir', type=str,
+                        required=True, help="Path to load the query dataset")
+    parser.add_argument('-d', '--gallery_data_dir', type=str,
+                        required=True, help="Path to load the gallery dataset")
+    parser.add_argument('-s', '--st_distribution', type=str,
                         required=True, help="Path to the sptial-temporal distribution of the data")
     parser.add_argument('-b', '--batch_size', type=int,
                         required=False, default=64, help="Batch size for evaluating the model")

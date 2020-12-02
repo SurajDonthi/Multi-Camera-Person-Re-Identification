@@ -89,12 +89,6 @@ class ST_ReID(PCB, pl.LightningModule):
 
         return loss, acc
 
-    # The only problem with this implementation is that it takes a lot of
-    # time to process all the images in query and gallery. Also while the
-    # query size can be very minimal, the gallery size has to be very
-    # significant. Else the results won't be accurate!
-    # ? Will there be memory overrun issues?
-
     def eval_shared_step(self, batch, batch_idx, dataloader_idx):
         X, y, cam_ids, frames = batch
 
