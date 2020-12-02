@@ -45,7 +45,7 @@ git clone https://github.com/SurajDonthi/MTMCT-Person-Re-Identification
 
 cd MTMCT-Person-Re-Identification
 
-pip install setup.py
+pip install -r requirements.txt
 ```
 2. Download the datasets. (By default you can download & unzip them to `data/raw/` directory)
 
