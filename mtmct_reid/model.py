@@ -86,7 +86,7 @@ class PCB(nn.Module):
             setattr(self, name, ClassifierBlock(
                 2048, num_classes, True, 'lrelu', 256))
 
-    def forward(self, x, training=True):
+    def forward(self, x, training=False):
         x = self.model(x)
         x = torch.squeeze(x)
         # Create a hook to identify whether

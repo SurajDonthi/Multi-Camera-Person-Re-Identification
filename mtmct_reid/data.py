@@ -12,9 +12,32 @@ from utils import get_ids
 
 
 class ReIDDataset(Dataset):
+    """
+    The ReID Dataset module is a custom Dataset module, specific to parsing 
+        the Market & Duke Person Re-Identification datasets.
+
+    Args:
+        data_dir (str): The path where the dataset is located.
+
+        transform ([list, torchvision.transforms], optional): Pass the list of
+            transforms to transform the input images. Defaults to None.
+
+        target_transform ([list, torchvision.transforms], optional): Pass the
+            list of transforms to transform the labels. Defaults to None.
+
+        ret_camid_n_frame (bool, optional): Whether to return camera ids and
+            frames. True will additionally return cam_ids and frame. 
+            Defaults to False.
+
+    Raises:
+        Exception: [description]
+        Exception: [description]
+
+    """
 
     def __init__(self, data_dir: str, transform=None, target_transform=None,
                  ret_camid_n_frame: bool = False):
+
         super(ReIDDataset, self).__init__()
         self.data_dir = Path(data_dir)
 

@@ -75,7 +75,7 @@ class ST_ReID(PCB, pl.LightningModule):
     # Shared steps
     def shared_step(self, batch, batch_idx):
         X, y = batch
-        parts_proba = self(X)    # returns a list of parts
+        parts_proba = self(X, training=True)    # returns a list of parts
 
         loss = 0
         y_pred = torch.zeros_like(parts_proba[0])
@@ -130,7 +130,6 @@ class ST_ReID(PCB, pl.LightningModule):
 
         return loss, acc
 
-    # ! The crazy values of metrics that we are getting is because of the
     def evaluation_metrics(self):
         self.q_features = l2_norm_standardize(self.q_features)
         self.g_features = l2_norm_standardize(self.g_features)
@@ -166,7 +165,6 @@ class ST_ReID(PCB, pl.LightningModule):
         result.log_dict(dictionary=logs, prog_bar=True)
         return result
 
-    # !
     def _on_validation_epoch_start(self) -> None:
         # self.all_features = torch.Tensor()
         self.q_features = torch.Tensor()
@@ -211,7 +209,6 @@ class ST_ReID(PCB, pl.LightningModule):
         result.log_dict(dictionary=out)
         return result
 
-    # !
     def _on_test_epoch_start(self) -> None:
         # self.all_features = torch.Tensor()
         self.q_features = torch.Tensor()
