@@ -14,6 +14,8 @@
       "args": [
         "--description",
         "Experiment description....",
+        "--debug",
+        "False",
         "--data_dir",
         "data/raw/Market-1501-v15.09.15",
         "--st_distribution",
@@ -48,6 +50,10 @@
       "console": "integratedTerminal",
       "pythonArgs": ["-W", "ignore::UserWarning::0"],
       "args": [
+        "--description",
+        "Experiment description....",
+        "--debug",
+        "False",
         "--data_dir",
         "data/raw/DukeMTMC-reID",
         "--st_distribution",
@@ -82,6 +88,10 @@
       "console": "integratedTerminal",
       "pythonArgs": ["-W", "ignore::UserWarning::0"],
       "args": [
+        "--description",
+        "Experiment description....",
+        "--debug",
+        "False",
         "--data_dir",
         "data/raw/Market-1501-v15.09.15",
         "--st_distribution",
@@ -112,6 +122,10 @@
       "console": "integratedTerminal",
       "pythonArgs": ["-W", "ignore::UserWarning::0"],
       "args": [
+        "--description",
+        "Experiment description....",
+        "--debug",
+        "False",
         "--data_dir",
         "data/raw/DukeMTMC-reID",
         "--st_distribution",
