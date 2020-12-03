@@ -6,4 +6,3 @@ pathlib2
 joblib
 numpy
 matplotlib
-csv
