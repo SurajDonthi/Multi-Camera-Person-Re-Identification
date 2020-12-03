@@ -73,9 +73,9 @@ class ST_ReID(PCB, pl.LightningModule):
         self.st_distribution = self.trainer.datamodule.st_distribution
 
     # Shared steps
-    def shared_step(self, batch, batch_idx):
+    def shared_step(self, batch, batch_idx, training=False):
         X, y = batch
-        parts_proba = self(X, training=True)    # returns a list of parts
+        parts_proba = self(X, training=training)    # returns a list of parts
 
         loss = 0
         y_pred = torch.zeros_like(parts_proba[0])
@@ -151,7 +151,7 @@ class ST_ReID(PCB, pl.LightningModule):
 
     # Training
     def training_step(self, batch, batch_idx):
-        loss, acc = self.shared_step(batch, batch_idx)
+        loss, acc = self.shared_step(batch, batch_idx, training=True)
 
         logs = {'Loss/train_loss': loss, 'Accuracy/train_acc': acc}
 
