@@ -6,3 +6,4 @@ pathlib2
 joblib
 numpy
 matplotlib
+future>=0.17.1
