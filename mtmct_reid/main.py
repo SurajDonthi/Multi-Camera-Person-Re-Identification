@@ -23,7 +23,7 @@ def main(args):
 
     log_dir = Path(tt_logger.save_dir) / f"version_{tt_logger.version}"
 
-    checkpoint_dir = Path(log_dir) / "checkpoints"
+    checkpoint_dir = log_dir / "checkpoints"
     os.makedirs(checkpoint_dir, exist_ok=True)
     chkpt_callback = ModelCheckpoint(checkpoint_dir,
                                      monitor='Loss/val_loss',
