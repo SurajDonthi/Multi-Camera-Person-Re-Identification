@@ -14,11 +14,16 @@ from utils import save_args
 
 
 def main(args):
-    tb_logger = TensorBoardLogger(save_dir=args.log_path, name="")
-    tt_logger = TestTubeLogger(
-        save_dir=args.log_path, name="", version=tb_logger.version)
+    tt_logger = TestTubeLogger(save_dir=args.log_path, name="",
+                               description=args.description,
+                               create_git_tag=True,
+                               debug=args.debug
+                               )
+    tt_logger.experiment
 
-    checkpoint_dir = Path(tb_logger.log_dir) / "checkpoints"
+    log_dir = Path(tt_logger.save_dir) / f"version_{tt_logger.version}"
+
+    checkpoint_dir = Path(log_dir) / "checkpoints"
     os.makedirs(checkpoint_dir, exist_ok=True)
     chkpt_callback = ModelCheckpoint(checkpoint_dir,
                                      monitor='Loss/val_loss',
@@ -32,9 +37,9 @@ def main(args):
     model = ST_ReID(data_module.num_classes, learning_rate=args.learning_rate,
                     criterion=args.criterion, rerank=args.rerank)
 
-    save_args(args, tb_logger.log_dir)
+    save_args(args, log_dir)
 
-    trainer = Trainer.from_argparse_args(args, logger=[tb_logger, tt_logger],
+    trainer = Trainer.from_argparse_args(args, logger=[tt_logger],
                                          checkpoint_callback=chkpt_callback,
                                          profiler=True)  # AdvancedProfiler()
 
