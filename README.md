@@ -45,7 +45,7 @@ git clone https://github.com/SurajDonthi/MTMCT-Person-Re-Identification
 
 cd MTMCT-Person-Re-Identification
 
-pip install setup.py
+pip install -r requirements.txt
 ```
 2. Download the datasets. (By default you can download & unzip them to `data/raw/` directory)
 
@@ -62,7 +62,7 @@ NOTE: This project uses [pytorch-lightning](https://pytorch-lightning.readthedoc
 Run the below command in the shell.
 
 ```sh
-mtmct_reid --data_dir path/to/dataset/ --save_distribution path/to/dataset/st_distribution.pkl --gpus 1 --max_epochs 60
+python mtmct_reid/main.py --data_dir path/to/dataset/ --save_distribution path/to/dataset/st_distribution.pkl --gpus 1 --max_epochs 60
 ```
 
 For a detailed list of arguments you can pass, refer to [`hparams.csv`](https://github.com/SurajDonthi/MTMCT-Person-Re-Identification/blob/master/hparams.csv)
