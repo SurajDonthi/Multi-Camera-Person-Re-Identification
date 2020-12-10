@@ -136,25 +136,27 @@ class ReIDDataModule(pl.LightningDataModule):
         self.prepare_data()
 
     def prepare_data(self):
-        transforms_list = [transforms.Resize((384, 192), interpolation=3),
+        train_transforms = [transforms.Resize((384, 192), interpolation=3),
                            transforms.RandomHorizontalFlip(),
                            transforms.ToTensor(),
                            transforms.Normalize([0.485, 0.456, 0.406], [
                                0.229, 0.224, 0.225])
                            ]
+        test_transforms = train_transforms
+        test_transforms.pop(1)
 
         if self.random_erasing > 0:
-            transforms_list.append(
+            train_transforms.append(
                 transforms.RandomErasing(self.random_erasing))
         if self.color_jitter:
-            transforms_list.append(transforms.ColorJitter())
+            train_trainsforms.append(transforms.ColorJitter())
 
-        transform = transforms.Compose(transforms_list)
-        self.train_data = ReIDDataset(self.train_dir, transform)
-        self.num_classes = len(self.train_data.classes)
+        train_trainsforms = transforms.Compose(train_trainsforms)
+        self.train = ReIDDataset(self.train_dir, train_trainsforms)
+        self.num_classes = len(self.train.classes)
 
-        # self.query = ReIDDataset(self.query_dir, transform)
-        self.gallery = ReIDDataset(self.test_dir, transform)
+        self.query = ReIDDataset(self.query_dir, test_trainsforms)
+        self.gallery = ReIDDataset(self.test_dir, test_trainsforms)
 
         self._load_st_distribution()
         if self.save_distribution:
@@ -205,7 +207,7 @@ class ReIDDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
 
-        return DataLoader(self.train_data, batch_size=self.train_batchsize,
+        return DataLoader(self.train, batch_size=self.train_batchsize,
                           shuffle=True, num_workers=self.num_workers,
                           pin_memory=True)
 
@@ -213,14 +215,6 @@ class ReIDDataModule(pl.LightningDataModule):
         return self.test_dataloader()
 
     def test_dataloader(self):
-        transform = transforms.Compose([
-            # Image.BICUBIC
-            transforms.Resize(size=(384, 192), interpolation=3),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
-        # self.query.transform = transform
-        self.gallery.transform = transform
 
         # query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
         #                           shuffle=False, num_workers=self.num_workers,
