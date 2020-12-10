@@ -154,7 +154,8 @@ class ReIDDataModule(pl.LightningDataModule):
         train_transforms = transforms.Compose(train_transforms)
         self.train = ReIDDataset(self.train_dir, train_transforms)
         self.num_classes = len(self.train.classes)
-
+        
+        test_transforms = transforms.Compose(test_transforms)
         self.query = ReIDDataset(self.query_dir, test_transforms)
         self.gallery = ReIDDataset(self.test_dir, test_transforms)
 
