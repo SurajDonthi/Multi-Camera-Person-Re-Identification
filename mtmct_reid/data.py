@@ -149,14 +149,14 @@ class ReIDDataModule(pl.LightningDataModule):
             train_transforms.append(
                 transforms.RandomErasing(self.random_erasing))
         if self.color_jitter:
-            train_trainsforms.append(transforms.ColorJitter())
+            train_transforms.append(transforms.ColorJitter())
 
-        train_trainsforms = transforms.Compose(train_trainsforms)
-        self.train = ReIDDataset(self.train_dir, train_trainsforms)
+        train_transforms = transforms.Compose(train_transforms)
+        self.train = ReIDDataset(self.train_dir, train_transforms)
         self.num_classes = len(self.train.classes)
 
-        self.query = ReIDDataset(self.query_dir, test_trainsforms)
-        self.gallery = ReIDDataset(self.test_dir, test_trainsforms)
+        self.query = ReIDDataset(self.query_dir, test_transforms)
+        self.gallery = ReIDDataset(self.test_dir, test_transforms)
 
         self._load_st_distribution()
         if self.save_distribution:
