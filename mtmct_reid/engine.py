@@ -4,14 +4,13 @@ from typing import Any, List
 import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
-# from pytorch_lightning.metrics.functional import accuracy
 from torch.optim import lr_scheduler
 from torch.optim.sgd import SGD
 
-from mtmct_reid.metrics import joint_scores, mAP
-from mtmct_reid.model import PCB
-from mtmct_reid.re_ranking import re_ranking
-from mtmct_reid.utils import fliplr, l2_norm_standardize, plot_distributions
+from metrics import joint_scores, mAP
+from model import PCB
+from re_ranking import re_ranking
+from utils import fliplr, l2_norm_standardize, plot_distributions
 
 LOSSES = {'bce': F.binary_cross_entropy,
           'bce_logits': F.binary_cross_entropy_with_logits,
@@ -72,8 +71,8 @@ class ST_ReID(PCB, pl.LightningModule):
     def prepare_data(self) -> None:
         self.st_distribution = self.trainer.datamodule.st_distribution
 
-    # Shared steps
-    def shared_step(self, batch, batch_idx):
+    # Shared steps -> To calculate loss/acc & uses parts_probs
+    def shared_step(self, batch):
         X, y = batch
         parts_proba = self(X, training=True)    # returns a list of parts
 
@@ -89,7 +88,29 @@ class ST_ReID(PCB, pl.LightningModule):
 
         return loss, acc
 
-    def eval_shared_step(self, batch, batch_idx, dataloader_idx):
+    # Training
+    def training_step(self, batch, batch_idx):
+        loss, acc = self.shared_step(batch)
+
+        logs = {'Loss/train_loss': loss, 'Accuracy/train_acc': acc}
+
+        self.log_dict(logs, prog_bar=True,
+                      on_step=True, on_epoch=True)
+        return loss
+
+    # Validation
+    def on_validation_epoch_start(self) -> None:
+
+        self.q_features = torch.Tensor()
+        self.q_targets = torch.Tensor()
+        self.q_cam_ids = torch.Tensor()
+        self.q_frames = torch.Tensor()
+        self.g_features = torch.Tensor()
+        self.g_targets = torch.Tensor()
+        self.g_cam_ids = torch.Tensor()
+        self.g_frames = torch.Tensor()
+
+    def eval_shared_step(self, batch, dataloader_idx):
         X, y, cam_ids, frames = batch
 
         feature_sum = 0
@@ -98,7 +119,6 @@ class ST_ReID(PCB, pl.LightningModule):
             feature_sum += features
             X = fliplr(X, self.device)
 
-        # ? Should we just do batch_idx < 2 for this (for evaluation)?
         if dataloader_idx == 0:
 
             self.q_features = torch.cat([self.q_features, feature_sum])
@@ -109,7 +129,6 @@ class ST_ReID(PCB, pl.LightningModule):
             self.q_frames = torch.cat(
                 [self.q_frames, frames.detach().cpu()])
 
-        # ? Should we just do batch_idx ~=75% of batches for this (for eval.)?
         elif dataloader_idx == 1:
 
             self.g_features = torch.cat([self.g_features, feature_sum])
@@ -120,11 +139,19 @@ class ST_ReID(PCB, pl.LightningModule):
             self.g_frames = torch.cat(
                 [self.g_frames, frames.detach().cpu()])
 
-        loss, acc = self.shared_step(batch, batch_idx)
+    def validation_step(self, batch, batch_idx, dataloader_idx):
 
-        return loss, acc
+        if dataloader_idx > 0:
+            self.eval_shared_step(batch, dataloader_idx)
+
+        if dataloader_idx == 0:
+            loss, acc = self.shared_step(batch)
+
+            logs = {'Loss/val_loss': loss, 'Accuracy/val_acc': acc}
+            self.log_dict(logs, prog_bar=True, on_step=True, on_epoch=True)
 
     def evaluation_metrics(self):
+
         self.q_features = l2_norm_standardize(self.q_features)
         self.g_features = l2_norm_standardize(self.g_features)
 
@@ -149,109 +176,32 @@ class ST_ReID(PCB, pl.LightningModule):
 
         return mean_ap, cmc
 
-    # Training
-    def training_step(self, batch, batch_idx):
-        loss, acc = self.shared_step(batch, batch_idx)
+    def validation_epoch_end(self, outputs):
+        mean_ap, cmc = self.evaluation_metrics()
 
-        logs = {'Loss/train_loss': loss, 'Accuracy/train_acc': acc}
+        mAP_logs = {'Results/val_mAP': mean_ap,
+                    'Results/val_CMC_top1': cmc[0].tolist(),
+                    'Results/val_CMC_top5': cmc[4].tolist()}
+        self.log_dict(mAP_logs)
 
-        result = pl.TrainResult(loss)
-        result.log_dict(dictionary=logs, prog_bar=True)
-        return result
+    # Testing
+    def on_test_epoch_start(self) -> None:
+        self.on_validation_epoch_start()
 
-    def _on_validation_epoch_start(self) -> None:
-        # self.all_features = torch.Tensor()
-        self.q_features = torch.Tensor()
-        self.q_targets = torch.Tensor()
-        self.q_cam_ids = torch.Tensor()
-        self.q_frames = torch.Tensor()
-        self.g_features = torch.Tensor()
-        self.g_targets = torch.Tensor()
-        self.g_cam_ids = torch.Tensor()
-        self.g_frames = torch.Tensor()
+    def test_step(self, batch, batch_idx, dataloader_idx):
+        self.eval_shared_step(batch, dataloader_idx)
 
-    def validation_step(self, batch, batch_idx):    # , dataloader_idx
-        loss, acc = self.shared_step(batch, batch_idx)  # eval_, dataloader_idx
-
-        logs = {'Loss/val_loss': loss, 'Accuracy/val_acc': acc}
-        result = pl.EvalResult()
-        result.log_dict(logs, prog_bar=True)
-        return result
-
-    def _validation_epoch_end(self, outputs) -> pl.EvalResult:
-        # mean_ap, cmc = self.evaluation_metrics()
-
-        # avg_loss = (torch.mean(outputs[0]['Loss/val_loss']) +
-        #             torch.mean(outputs[1]['Loss/val_loss']) / 2)
-        # avg_acc = (torch.mean(outputs[0]['Accuracy/val_acc']) +
-        #            torch.mean(outputs[1]['Accuracy/val_acc']) / 2)
-
-        avg_loss = torch.mean(outputs['Loss/val_loss'])
-        avg_acc = torch.mean(outputs['Accuracy/val_acc'])
-
-        # mAP_logs = {'Results/val_mAP': mean_ap,
-        #             'Results/val_CMC_top1': cmc[0].tolist(),
-        #             'Results/val_CMC_top5': cmc[4].tolist()}
-
-        log = {'Loss/avg_val_loss': avg_loss.tolist(),
-               'Accuracy/avg_val_accuracy': avg_acc.tolist(),
-               #    **mAP_logs
-               }
-
-        out = {**log, 'step': self.current_epoch}
-        result = pl.EvalResult()
-        result.log_dict(dictionary=out)
-        return result
-
-    def _on_test_epoch_start(self) -> None:
-        # self.all_features = torch.Tensor()
-        self.q_features = torch.Tensor()
-        self.q_targets = torch.Tensor()
-        self.q_cam_ids = torch.Tensor()
-        self.q_frames = torch.Tensor()
-        self.g_features = torch.Tensor()
-        self.g_targets = torch.Tensor()
-        self.g_cam_ids = torch.Tensor()
-        self.g_frames = torch.Tensor()
-
-    def test_step(self, batch, batch_idx):  # , dataloader_idx
-        loss, acc = self.shared_step(batch, batch_idx)  # eval_, dataloader_idx
-
-        logs = {'Loss/test_loss': loss, 'Accuracy/test_acc': acc}
-
-        result = pl.EvalResult()
-        result.log_dict(dictionary=logs, prog_bar=True)
-        return result
-
-    def _test_epoch_end(self, outputs: List[Any]) -> pl.EvalResult:
+    def test_epoch_end(self, outputs: List[Any]):
 
         fig = plot_distributions(self.trainer.datamodule.st_distribution)
 
-        self.logger[0].experiment.add_figure('Spatial-Temporal Distribution',
-                                             fig)
+        self.logger.experiment.add_figure('Spatial-Temporal Distribution',
+                                          fig)
 
-        # mean_ap, cmc = self.evaluation_metrics()
+        mean_ap, cmc = self.evaluation_metrics()
 
-        # avg_loss = (torch.mean(outputs[0]['Loss/test_loss']) +
-        #             torch.mean(outputs[1]['Loss/test_loss']) / 2)
-        # avg_acc = (torch.mean(outputs[0]['Accuracy/test_acc']) +
-        #            torch.mean(outputs[1]['Accuracy/test_acc']) / 2)
+        mAP_logs = {'Results/test_mAP': mean_ap,
+                    'Results/test_CMC_top1': cmc[0].tolist(),
+                    'Results/test_CMC_top5': cmc[4].tolist()}
 
-        avg_loss = torch.mean(outputs['Loss/test_loss'])
-        avg_acc = torch.mean(outputs['Accuracy/test_acc'])
-
-        # mAP_logs = {'Results/test_mAP': mean_ap,
-        #             'Results/test_CMC_top1': cmc[0].tolist(),
-        #             'Results/test_CMC_top5': cmc[4].tolist()}
-
-        log = {'Loss/avg_test_loss': avg_loss.tolist(),
-               'Accuracy/avg_test_accuracy': avg_acc.tolist(),
-               }
-
-        out = {**log,
-               # **mAP_logs
-               }
-
-        result = pl.EvalResult()
-        result.log_dict(dictionary=out)
-        return result
+        self.log_dict(mAP_logs, on_epoch=True)

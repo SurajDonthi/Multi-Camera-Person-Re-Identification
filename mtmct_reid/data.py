@@ -4,11 +4,12 @@ import joblib
 import pytorch_lightning as pl
 from pathlib2 import Path
 from PIL import Image
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, random_split
+from torch.utils.data.dataset import Subset
 from torchvision import transforms
 
-from mtmct_reid.metrics import smooth_st_distribution
-from mtmct_reid.utils import get_ids
+from metrics import smooth_st_distribution
+from utils import get_ids
 
 
 class ReIDDataset(Dataset):
@@ -30,8 +31,7 @@ class ReIDDataset(Dataset):
             Defaults to False.
 
     Raises:
-        Exception: [description]
-        Exception: [description]
+        Exception: If directory does not exist!
 
     """
 
@@ -63,8 +63,6 @@ class ReIDDataset(Dataset):
         self.imgs = list(self.data_dir.glob('*.jpg'))
         # Filter out labels with -1
         self.imgs = [img for img in self.imgs if '-1' not in img.stem]
-
-        self.num_samples = len(self.imgs)
 
         self.cam_ids, self.labels, self.frames = get_ids(
             self.imgs, self.dataset)
@@ -136,12 +134,13 @@ class ReIDDataModule(pl.LightningDataModule):
         self.prepare_data()
 
     def prepare_data(self):
+
         train_transforms = [transforms.Resize((384, 192), interpolation=3),
-                           transforms.RandomHorizontalFlip(),
-                           transforms.ToTensor(),
-                           transforms.Normalize([0.485, 0.456, 0.406], [
-                               0.229, 0.224, 0.225])
-                           ]
+                            transforms.RandomHorizontalFlip(),
+                            transforms.ToTensor(),
+                            transforms.Normalize([0.485, 0.456, 0.406], [
+                                0.229, 0.224, 0.225])
+                            ]
         test_transforms = train_transforms
         test_transforms.pop(1)
 
@@ -154,7 +153,10 @@ class ReIDDataModule(pl.LightningDataModule):
         train_transforms = transforms.Compose(train_transforms)
         self.train = ReIDDataset(self.train_dir, train_transforms)
         self.num_classes = len(self.train.classes)
-        
+        train_len = int(len(self.train) * 0.8)
+        test_len = len(self.train) - train_len
+        self.train, self.test = random_split(self.train, [train_len, test_len])
+
         test_transforms = transforms.Compose(test_transforms)
         self.query = ReIDDataset(self.query_dir, test_transforms)
         self.gallery = ReIDDataset(self.test_dir, test_transforms)
@@ -216,10 +218,14 @@ class ReIDDataModule(pl.LightningDataModule):
         test_loader = DataLoader(self.test, batch_size=self.test_batchsize,
                                  shuffle=False, num_workers=self.num_workers,
                                  pin_memory=True)
-        query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
+        query_indices = range(10)
+        query_loader = DataLoader(Subset(self.query, query_indices),
+                                  batch_size=self.test_batchsize,
                                   shuffle=False, num_workers=self.num_workers,
                                   pin_memory=True)
-        gall_loader = DataLoader(self.gallery, batch_size=self.test_batchsize,
+        evens = list(range(0, len(self.gallery), 2))
+        gall_loader = DataLoader(Subset(self.gallery, evens),
+                                 batch_size=self.test_batchsize,
                                  shuffle=True, num_workers=self.num_workers,
                                  pin_memory=True)
 

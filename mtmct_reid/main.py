@@ -4,8 +4,6 @@ from argparse import ArgumentParser
 from pathlib2 import Path
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
-# from pytorch_lightning.profiler import AdvancedProfiler
-from pytorch_lightning.loggers.tensorboard import TensorBoardLogger
 from pytorch_lightning.loggers.test_tube import TestTubeLogger
 
 from data import ReIDDataModule
@@ -41,17 +39,15 @@ def main(args):
 
     trainer = Trainer.from_argparse_args(args, logger=[tt_logger],
                                          checkpoint_callback=chkpt_callback,
-                                         profiler=True)  # AdvancedProfiler()
+                                         profiler=True)
 
     trainer.fit(model, data_module)
-    trainer.test(model)     # , data_module
+    trainer.test(model)
 
 
 if __name__ == "__main__":
 
     parser = ArgumentParser()
-    parser.add_argument('-gt', '--git_tag', type=bool,
-                        default=False, help='Creates a git tag if true')
     parser = ST_ReID.add_model_specific_args(parser)
     parser = ReIDDataModule.add_argparse_args(parser)
     parser = Trainer.add_argparse_args(parser)

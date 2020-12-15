@@ -2,7 +2,7 @@ import math
 import numpy as np
 import torch
 
-from mtmct_reid.utils import standardize
+from utils import standardize
 
 # Finding the best matches during testing:
 # Step 1: From a given dataset, compute it's Spatial-Temporal Distribution. ✔✔
