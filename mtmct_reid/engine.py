@@ -8,10 +8,10 @@ import torch.nn.functional as F
 from torch.optim import lr_scheduler
 from torch.optim.sgd import SGD
 
-from metrics import joint_scores, mAP
-from model import PCB
-from re_ranking import re_ranking
-from utils import fliplr, l2_norm_standardize, plot_distributions
+from mtmct_reid.metrics import joint_scores, mAP
+from mtmct_reid.model import PCB
+from mtmct_reid.re_ranking import re_ranking
+from mtmct_reid.utils import fliplr, l2_norm_standardize, plot_distributions
 
 LOSSES = {'bce': F.binary_cross_entropy,
           'bce_logits': F.binary_cross_entropy_with_logits,
@@ -37,17 +37,17 @@ class ST_ReID(PCB, pl.LightningModule):
     @staticmethod   # @classmethod not required as
     def add_model_specific_args(parent_parser):
         parser = ArgumentParser(parents=[parent_parser], add_help=False)
-        parser.add_argument('-lp', '--log_path', type=str,
+        parser.add_argument('-lp', '--log_path', type=str, required=False,
                             default='./lightning_logs')
-        parser.add_argument('-lr', '--learning_rate',
+        parser.add_argument('-lr', '--learning_rate', required=False,
                             type=float, default=0.1)
-        parser.add_argument('-c', '--criterion', type=str,
+        parser.add_argument('-c', '--criterion', type=str, required=False,
                             choices=LOSSES.keys(),
                             default='cross_entropy')
-        parser.add_argument('-re', '--rerank',
+        parser.add_argument('-re', '--rerank', required=False,
                             type=bool, default=False)
-        parser.add_argument('-sfe', '--save_features',
-                            type=bool, default=True)
+        parser.add_argument('-sfe', '--save_features', required=False,
+                            type=bool, default=False)
         parser.add_argument('-des', '--description', required=False, type=str)
         return parser
 
@@ -81,7 +81,7 @@ class ST_ReID(PCB, pl.LightningModule):
         y_pred = torch.zeros_like(parts_proba[0])
         for part in parts_proba:
             loss += self.criterion(part, y)
-            y_pred += F.softmax(part)
+            y_pred += F.softmax(part, dim=1)
 
         y_pred = torch.stack(parts_proba, dim=0).sum(dim=0)
         _, y_pred = torch.max(y_pred, dim=1)

@@ -7,8 +7,8 @@ from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 
-from metrics import smooth_st_distribution
-from utils import get_ids
+from mtmct_reid.metrics import smooth_st_distribution
+from mtmct_reid.utils import get_ids
 
 
 class ReIDDataset(Dataset):
@@ -136,25 +136,28 @@ class ReIDDataModule(pl.LightningDataModule):
         self.prepare_data()
 
     def prepare_data(self):
-        transforms_list = [transforms.Resize((384, 192), interpolation=3),
+        train_transforms = [transforms.Resize((384, 192), interpolation=3),
                            transforms.RandomHorizontalFlip(),
                            transforms.ToTensor(),
                            transforms.Normalize([0.485, 0.456, 0.406], [
                                0.229, 0.224, 0.225])
                            ]
+        test_transforms = train_transforms
+        test_transforms.pop(1)
 
         if self.random_erasing > 0:
-            transforms_list.append(
+            train_transforms.append(
                 transforms.RandomErasing(self.random_erasing))
         if self.color_jitter:
-            transforms_list.append(transforms.ColorJitter())
+            train_transforms.append(transforms.ColorJitter())
 
-        transform = transforms.Compose(transforms_list)
-        self.train_data = ReIDDataset(self.train_dir, transform)
-        self.num_classes = len(self.train_data.classes)
-
-        self.query = ReIDDataset(self.query_dir, transform)
-        self.gallery = ReIDDataset(self.test_dir, transform)
+        train_transforms = transforms.Compose(train_transforms)
+        self.train = ReIDDataset(self.train_dir, train_transforms)
+        self.num_classes = len(self.train.classes)
+        
+        test_transforms = transforms.Compose(test_transforms)
+        self.query = ReIDDataset(self.query_dir, test_transforms)
+        self.gallery = ReIDDataset(self.test_dir, test_transforms)
 
         self._load_st_distribution()
         if self.save_distribution:
@@ -205,7 +208,7 @@ class ReIDDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
 
-        return DataLoader(self.train_data, batch_size=self.train_batchsize,
+        return DataLoader(self.train, batch_size=self.train_batchsize,
                           shuffle=True, num_workers=self.num_workers,
                           pin_memory=True)
 

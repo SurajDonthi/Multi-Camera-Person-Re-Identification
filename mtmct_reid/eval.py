@@ -5,11 +5,11 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
 
-from data import ReIDDataset
-from metrics import joint_scores, mAP
-from model import PCB
-from re_ranking import re_ranking
-from utils import fliplr, l2_norm_standardize
+from mtmct_reid.data import ReIDDataset
+from mtmct_reid.metrics import joint_scores, mAP
+from mtmct_reid.model import PCB
+from mtmct_reid.re_ranking import re_ranking
+from mtmct_reid.utils import fliplr, l2_norm_standardize
 
 
 def generate_features(model, dataloader):
