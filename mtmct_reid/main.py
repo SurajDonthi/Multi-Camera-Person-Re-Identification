@@ -16,7 +16,7 @@ from utils import save_args
 def main(args):
     tt_logger = TestTubeLogger(save_dir=args.log_path, name="",
                                description=args.description,
-                               create_git_tag=True,
+                               create_git_tag=args.git_tag,
                                debug=args.debug
                                )
     tt_logger.experiment
@@ -50,6 +50,8 @@ def main(args):
 if __name__ == "__main__":
 
     parser = ArgumentParser()
+    parser.add_argument('-gt', '--git_tag', type=bool,
+                        default=False, help='Creates a git tag if true')
     parser = ST_ReID.add_model_specific_args(parser)
     parser = ReIDDataModule.add_argparse_args(parser)
     parser = Trainer.add_argparse_args(parser)

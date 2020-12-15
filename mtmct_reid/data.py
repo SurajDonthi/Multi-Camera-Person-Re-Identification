@@ -153,7 +153,7 @@ class ReIDDataModule(pl.LightningDataModule):
         self.train_data = ReIDDataset(self.train_dir, transform)
         self.num_classes = len(self.train_data.classes)
 
-        # self.query = ReIDDataset(self.query_dir, transform)
+        self.query = ReIDDataset(self.query_dir, transform)
         self.gallery = ReIDDataset(self.test_dir, transform)
 
         self._load_st_distribution()
@@ -210,24 +210,25 @@ class ReIDDataModule(pl.LightningDataModule):
                           pin_memory=True)
 
     def val_dataloader(self):
-        return self.test_dataloader()
-
-    def test_dataloader(self):
-        transform = transforms.Compose([
-            # Image.BICUBIC
-            transforms.Resize(size=(384, 192), interpolation=3),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
-        # self.query.transform = transform
-        self.gallery.transform = transform
-
-        # query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
-        #                           shuffle=False, num_workers=self.num_workers,
-        #                           pin_memory=True)
+        test_loader = DataLoader(self.test, batch_size=self.test_batchsize,
+                                 shuffle=False, num_workers=self.num_workers,
+                                 pin_memory=True)
+        query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
+                                  shuffle=False, num_workers=self.num_workers,
+                                  pin_memory=True)
         gall_loader = DataLoader(self.gallery, batch_size=self.test_batchsize,
                                  shuffle=True, num_workers=self.num_workers,
                                  pin_memory=True)
 
-        # return [query_loader, gall_loader]
-        return gall_loader
+        return [test_loader, query_loader, gall_loader]
+
+    def test_dataloader(self):
+
+        query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
+                                  shuffle=False, num_workers=self.num_workers,
+                                  pin_memory=True)
+        gall_loader = DataLoader(self.gallery, batch_size=self.test_batchsize,
+                                 shuffle=True, num_workers=self.num_workers,
+                                 pin_memory=True)
+
+        return [query_loader, gall_loader]
