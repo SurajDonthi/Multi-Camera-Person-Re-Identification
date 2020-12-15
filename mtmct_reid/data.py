@@ -213,16 +213,25 @@ class ReIDDataModule(pl.LightningDataModule):
                           pin_memory=True)
 
     def val_dataloader(self):
-        return self.test_dataloader()
-
-    def test_dataloader(self):
-
-        # query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
-        #                           shuffle=False, num_workers=self.num_workers,
-        #                           pin_memory=True)
+        test_loader = DataLoader(self.test, batch_size=self.test_batchsize,
+                                 shuffle=False, num_workers=self.num_workers,
+                                 pin_memory=True)
+        query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
+                                  shuffle=False, num_workers=self.num_workers,
+                                  pin_memory=True)
         gall_loader = DataLoader(self.gallery, batch_size=self.test_batchsize,
                                  shuffle=True, num_workers=self.num_workers,
                                  pin_memory=True)
 
-        # return [query_loader, gall_loader]
-        return gall_loader
+        return [test_loader, query_loader, gall_loader]
+
+    def test_dataloader(self):
+
+        query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
+                                  shuffle=False, num_workers=self.num_workers,
+                                  pin_memory=True)
+        gall_loader = DataLoader(self.gallery, batch_size=self.test_batchsize,
+                                 shuffle=True, num_workers=self.num_workers,
+                                 pin_memory=True)
+
+        return [query_loader, gall_loader]
