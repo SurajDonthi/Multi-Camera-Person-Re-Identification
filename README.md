@@ -4,6 +4,9 @@ This repository is inspired by the paper [Spatial-Temporal Reidentification (ST-
 
 This repository has been trained & tested on [DukeMTMTC-reID](https://megapixels.cc/duke_mtmc/) and [Market-1501 datasets](https://www.kaggle.com/pengcw1/market-1501). The model can be easily trained on any new datasets with a few tweaks to parse the files!
 
+<!--- You can do a quick run on Google Colab: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/SurajDonthi/Multi-Camera-Person-Re-Identification/blob/master/demo.ipynb) --->
+
+
 Below are the metrics on the various datasets.
 
 | Model                 | Size | Dataset | mAP  | CMC: Top1 | CMC: Top5 |
