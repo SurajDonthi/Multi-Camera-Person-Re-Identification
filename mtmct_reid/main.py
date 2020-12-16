@@ -24,7 +24,7 @@ def main(args):
     checkpoint_dir = log_dir / "checkpoints"
     os.makedirs(checkpoint_dir, exist_ok=True)
     chkpt_callback = ModelCheckpoint(checkpoint_dir,
-                                     monitor='Loss/val_loss',
+                                     monitor='Loss/val_loss/data_loader_idx_2',
                                      save_last=True,
                                      mode='min',
                                      save_top_k=10,

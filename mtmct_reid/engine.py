@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 from typing import Any, List
 
 import pytorch_lightning as pl
+from pytorch_lightning.utilities.parsing import str_to_bool
 import torch
 import torch.nn.functional as F
 from torch.optim import lr_scheduler
@@ -37,7 +38,7 @@ class ST_ReID(PCB, pl.LightningModule):
     def add_model_specific_args(parent_parser):
         parser = ArgumentParser(parents=[parent_parser], add_help=False)
         parser.add_argument('-lp', '--log_path', type=str, required=False,
-                            default='./lightning_logs')
+                            default='./logs')
         parser.add_argument('-lr', '--learning_rate', required=False,
                             type=float, default=0.1)
         parser.add_argument('-c', '--criterion', type=str, required=False,
@@ -48,6 +49,8 @@ class ST_ReID(PCB, pl.LightningModule):
         parser.add_argument('-sfe', '--save_features', required=False,
                             type=bool, default=False)
         parser.add_argument('-des', '--description', required=False, type=str)
+        parser.add_argument('--git-tag', required=False, type=str_to_bool)
+        parser.add_argument('--debug', required=False, type=str_to_bool)
         return parser
 
     def configure_optimizers(self):
@@ -93,9 +96,7 @@ class ST_ReID(PCB, pl.LightningModule):
         loss, acc = self.shared_step(batch)
 
         logs = {'Loss/train_loss': loss, 'Accuracy/train_acc': acc}
-
-        self.log_dict(logs, prog_bar=True,
-                      on_step=True, on_epoch=True)
+        self.log_dict(logs, prog_bar=True)
         return loss
 
     # Validation
@@ -141,14 +142,17 @@ class ST_ReID(PCB, pl.LightningModule):
 
     def validation_step(self, batch, batch_idx, dataloader_idx):
 
-        if dataloader_idx > 0:
-            self.eval_shared_step(batch, dataloader_idx)
-
-        if dataloader_idx == 0:
+        if dataloader_idx == 2:
             loss, acc = self.shared_step(batch)
 
-            logs = {'Loss/val_loss': loss, 'Accuracy/val_acc': acc}
-            self.log_dict(logs, prog_bar=True, on_step=True, on_epoch=True)
+            self.val_logs = {'Loss/val_loss': loss, 'Accuracy/val_acc': acc}
+            self.log_dict(self.val_logs, prog_bar=True)
+            # return loss
+        else:
+            self.eval_shared_step(batch, dataloader_idx)
+            if not hasattr(self, 'val_logs'):
+                self.val_logs = {'Loss/val_loss': 0, 'Accuracy/val_acc': 0}
+            self.log_dict(self.val_logs, logger=False)
 
     def evaluation_metrics(self):
 
@@ -163,7 +167,7 @@ class ST_ReID(PCB, pl.LightningModule):
                               self.g_features,
                               self.g_cam_ids,
                               self.g_frames,
-                              self.st_distribution)
+                              self.trainer.datamodule.st_distribution)
 
         if self.rerank:
             scores = re_ranking(scores)
@@ -191,7 +195,7 @@ class ST_ReID(PCB, pl.LightningModule):
     def test_step(self, batch, batch_idx, dataloader_idx):
         self.eval_shared_step(batch, dataloader_idx)
 
-    def test_epoch_end(self, outputs: List[Any]):
+    def test_epoch_end(self, outputs):
 
         fig = plot_distributions(self.trainer.datamodule.st_distribution)
 
@@ -204,4 +208,4 @@ class ST_ReID(PCB, pl.LightningModule):
                     'Results/test_CMC_top1': cmc[0].tolist(),
                     'Results/test_CMC_top5': cmc[4].tolist()}
 
-        self.log_dict(mAP_logs, on_epoch=True)
+        self.log_dict(mAP_logs)

@@ -150,6 +150,7 @@ data/
 datasets/
 models/
 lightning_logs/
+logs/
 
 # Data files
 # Tabular & models

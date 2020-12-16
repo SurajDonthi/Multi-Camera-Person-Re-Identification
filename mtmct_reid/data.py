@@ -158,8 +158,10 @@ class ReIDDataModule(pl.LightningDataModule):
         self.train, self.test = random_split(self.train, [train_len, test_len])
 
         test_transforms = transforms.Compose(test_transforms)
-        self.query = ReIDDataset(self.query_dir, test_transforms)
-        self.gallery = ReIDDataset(self.test_dir, test_transforms)
+        self.query = ReIDDataset(self.query_dir, test_transforms,
+                                 ret_camid_n_frame=True)
+        self.gallery = ReIDDataset(self.test_dir, test_transforms,
+                                   ret_camid_n_frame=True)
 
         self._load_st_distribution()
         if self.save_distribution:
@@ -229,7 +231,7 @@ class ReIDDataModule(pl.LightningDataModule):
                                  shuffle=True, num_workers=self.num_workers,
                                  pin_memory=True)
 
-        return [test_loader, query_loader, gall_loader]
+        return [query_loader, gall_loader, test_loader]
 
     def test_dataloader(self):
 
