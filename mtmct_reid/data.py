@@ -220,12 +220,12 @@ class ReIDDataModule(pl.LightningDataModule):
         test_loader = DataLoader(self.test, batch_size=self.test_batchsize,
                                  shuffle=False, num_workers=self.num_workers,
                                  pin_memory=True)
-        query_indices = range(10)
+        query_indices = range(self.test_batchsize)
         query_loader = DataLoader(Subset(self.query, query_indices),
                                   batch_size=self.test_batchsize,
                                   shuffle=False, num_workers=self.num_workers,
                                   pin_memory=True)
-        evens = list(range(0, len(self.gallery), 2))
+        evens = list(range(0, len(self.gallery), 3))
         gall_loader = DataLoader(Subset(self.gallery, evens),
                                  batch_size=self.test_batchsize,
                                  shuffle=True, num_workers=self.num_workers,
