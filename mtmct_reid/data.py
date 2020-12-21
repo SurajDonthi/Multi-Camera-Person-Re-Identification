@@ -4,17 +4,40 @@ import joblib
 import pytorch_lightning as pl
 from pathlib2 import Path
 from PIL import Image
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, random_split
+from torch.utils.data.dataset import Subset
 from torchvision import transforms
 
-from .metrics import smooth_st_distribution
-from .utils import get_ids
+from metrics import smooth_st_distribution
+from utils import get_ids
 
 
 class ReIDDataset(Dataset):
+    """
+    The ReID Dataset module is a custom Dataset module, specific to parsing 
+        the Market & Duke Person Re-Identification datasets.
+
+    Args:
+        data_dir (str): The path where the dataset is located.
+
+        transform ([list, torchvision.transforms], optional): Pass the list of
+            transforms to transform the input images. Defaults to None.
+
+        target_transform ([list, torchvision.transforms], optional): Pass the
+            list of transforms to transform the labels. Defaults to None.
+
+        ret_camid_n_frame (bool, optional): Whether to return camera ids and
+            frames. True will additionally return cam_ids and frame. 
+            Defaults to False.
+
+    Raises:
+        Exception: If directory does not exist!
+
+    """
 
     def __init__(self, data_dir: str, transform=None, target_transform=None,
                  ret_camid_n_frame: bool = False):
+
         super(ReIDDataset, self).__init__()
         self.data_dir = Path(data_dir)
 
@@ -40,8 +63,6 @@ class ReIDDataset(Dataset):
         self.imgs = list(self.data_dir.glob('*.jpg'))
         # Filter out labels with -1
         self.imgs = [img for img in self.imgs if '-1' not in img.stem]
-
-        self.num_samples = len(self.imgs)
 
         self.cam_ids, self.labels, self.frames = get_ids(
             self.imgs, self.dataset)
@@ -113,25 +134,34 @@ class ReIDDataModule(pl.LightningDataModule):
         self.prepare_data()
 
     def prepare_data(self):
-        transforms_list = [transforms.Resize((384, 192), interpolation=3),
-                           transforms.RandomHorizontalFlip(),
-                           transforms.ToTensor(),
-                           transforms.Normalize([0.485, 0.456, 0.406], [
-                               0.229, 0.224, 0.225])
-                           ]
+
+        train_transforms = [transforms.Resize((384, 192), interpolation=3),
+                            transforms.RandomHorizontalFlip(),
+                            transforms.ToTensor(),
+                            transforms.Normalize([0.485, 0.456, 0.406], [
+                                0.229, 0.224, 0.225])
+                            ]
+        test_transforms = train_transforms
+        test_transforms.pop(1)
 
         if self.random_erasing > 0:
-            transforms_list.append(
+            train_transforms.append(
                 transforms.RandomErasing(self.random_erasing))
         if self.color_jitter:
-            transforms_list.append(transforms.ColorJitter())
+            train_transforms.append(transforms.ColorJitter())
 
-        transform = transforms.Compose(transforms_list)
-        self.train_data = ReIDDataset(self.train_dir, transform)
-        self.num_classes = len(self.train_data.classes)
+        train_transforms = transforms.Compose(train_transforms)
+        self.train = ReIDDataset(self.train_dir, train_transforms)
+        self.num_classes = len(self.train.classes)
+        train_len = int(len(self.train) * 0.8)
+        test_len = len(self.train) - train_len
+        self.train, self.test = random_split(self.train, [train_len, test_len])
 
-        # self.query = ReIDDataset(self.query_dir, transform)
-        self.gallery = ReIDDataset(self.test_dir, transform)
+        test_transforms = transforms.Compose(test_transforms)
+        self.query = ReIDDataset(self.query_dir, test_transforms,
+                                 ret_camid_n_frame=True)
+        self.gallery = ReIDDataset(self.test_dir, test_transforms,
+                                   ret_camid_n_frame=True)
 
         self._load_st_distribution()
         if self.save_distribution:
@@ -182,29 +212,34 @@ class ReIDDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
 
-        return DataLoader(self.train_data, batch_size=self.train_batchsize,
+        return DataLoader(self.train, batch_size=self.train_batchsize,
                           shuffle=True, num_workers=self.num_workers,
                           pin_memory=True)
 
     def val_dataloader(self):
-        return self.test_dataloader()
+        test_loader = DataLoader(self.test, batch_size=self.test_batchsize,
+                                 shuffle=False, num_workers=self.num_workers,
+                                 pin_memory=True)
+        query_indices = range(self.test_batchsize)
+        query_loader = DataLoader(Subset(self.query, query_indices),
+                                  batch_size=self.test_batchsize,
+                                  shuffle=False, num_workers=self.num_workers,
+                                  pin_memory=True)
+        evens = list(range(0, len(self.gallery), 3))
+        gall_loader = DataLoader(Subset(self.gallery, evens),
+                                 batch_size=self.test_batchsize,
+                                 shuffle=True, num_workers=self.num_workers,
+                                 pin_memory=True)
+
+        return [query_loader, gall_loader, test_loader]
 
     def test_dataloader(self):
-        transform = transforms.Compose([
-            # Image.BICUBIC
-            transforms.Resize(size=(384, 192), interpolation=3),
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
-        # self.query.transform = transform
-        self.gallery.transform = transform
 
-        # query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
-        #                           shuffle=False, num_workers=self.num_workers,
-        #                           pin_memory=True)
+        query_loader = DataLoader(self.query, batch_size=self.test_batchsize,
+                                  shuffle=False, num_workers=self.num_workers,
+                                  pin_memory=True)
         gall_loader = DataLoader(self.gallery, batch_size=self.test_batchsize,
                                  shuffle=True, num_workers=self.num_workers,
                                  pin_memory=True)
 
-        # return [query_loader, gall_loader]
-        return gall_loader
+        return [query_loader, gall_loader]
