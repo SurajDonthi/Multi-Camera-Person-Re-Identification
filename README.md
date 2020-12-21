@@ -56,7 +56,7 @@ You can get started by training this model. Trained models will be available soo
 
 *Dependencies*
 
-This project requires `pytorch>=1.5.0`, `torchvision>=0.6.0`, `pytorch-lightning=0.9.0`, `tensorboard=2.2.0`, `pathlib2`, `joblib` and other common packages like `numpy`, `matplotlib` and `csv`.
+This project requires `pytorch>=1.5.0`, `torchvision>=0.6.0`, `pytorch-lightning=1.1.1`, `tensorboard`, `pathlib2`, `joblib` and other common packages like `numpy`, `matplotlib` and `csv`.
 
 NOTE: This project uses [pytorch-lightning](https://pytorch-lightning.readthedocs.io/en/latest/introduction_guide.html) which is a high-level interface to abstract away repeating Pytorch code. It helps achieve clean, & easy to maintain code with hardly any learning curve!
 
