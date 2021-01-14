@@ -72,10 +72,10 @@ For a detailed list of arguments you can pass, refer to [`hparams.csv`](https://
 
 #### Monitor the training on Tensorboard
 
-Log files are created to track the training in a new folder `lightning_logs`. To monitor the training, run the below command in the shell
+Log files are created to track the training in a new folder `logs`. To monitor the training, run the below command in the shell
 
 ```sh
-tensorboard --logdir lightning_logs/
+tensorboard --logdir logs/
 ```
 
 ## Metrics
