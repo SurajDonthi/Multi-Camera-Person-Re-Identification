@@ -158,6 +158,7 @@ class ReIDDataModule(pl.LightningDataModule):
         self.train, self.test = random_split(self.train, [train_len, test_len])
 
         test_transforms = transforms.Compose(test_transforms)
+        self.test = ReIDDataset(self.test_dir, test_transforms)
         self.query = ReIDDataset(self.query_dir, test_transforms,
                                  ret_camid_n_frame=True)
         self.gallery = ReIDDataset(self.test_dir, test_transforms,
