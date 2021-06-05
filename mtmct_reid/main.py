@@ -6,9 +6,9 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.loggers.test_tube import TestTubeLogger
 
-from data import ReIDDataModule
-from engine import ST_ReID
-from utils import save_args
+from mtmct_reid.data import ReIDDataModule
+from mtmct_reid.engine import ST_ReID
+from mtmct_reid.utils import save_args
 
 
 def main(args):
