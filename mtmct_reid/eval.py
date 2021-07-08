@@ -5,11 +5,11 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision.transforms import transforms
 
-from mtmct_reid.data import ReIDDataset
-from mtmct_reid.metrics import joint_scores, mAP
-from mtmct_reid.model import PCB
-from mtmct_reid.re_ranking import re_ranking
-from mtmct_reid.utils import fliplr, l2_norm_standardize
+from .data import ReIDDataset
+from .metrics import joint_scores, mAP
+from .model import PCB
+from .re_ranking import re_ranking
+from .utils import fliplr, l2_norm_standardize
 
 
 def generate_features(model, dataloader):
@@ -41,29 +41,29 @@ def main(args):
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
-    query_data = ReIDDataset(data_dir=args.data_dir, transform=transform)
+    query_data = ReIDDataset(data_dir=args.query_data_dir, transform=transform)
     query_dataloader = DataLoader(query_data, batch_size=args.batch_size,
                                   shuffle=True, num_workers=args.num_workers,
                                   pin_memory=True)
 
-    gal_data = ReIDDataset(data_dir=args.data_dir, transform=transform)
+    gal_data = ReIDDataset(data_dir=args.gallery_data_dir, transform=transform)
     gal_dataloader = DataLoader(gal_data, batch_size=args.batch_size,
                                 shuffle=True, num_workers=args.num_workers,
                                 pin_memory=True)
 
     # Load the model
     model = PCB(num_classes=len(query_data.num_classes))
-    model.load_state_dict(args.model)
+    model.load_state_dict(args.model_path)
     model.eval()
-
-    # Load Spatial-Temporal Distribution
-    st_distribution = joblib.load(args.st_distribution)
 
     # Generate the feature vectors
     q_features, q_targets, q_cam_ids, q_frames = generate_features(
         model, query_dataloader)
     g_features, g_targets, g_cam_ids, g_frames = generate_features(
         model, gal_dataloader)
+
+    # Load Spatial-Temporal Distribution
+    st_distribution = joblib.load(args.st_distribution_path)
 
     scores = joint_scores(q_features, q_cam_ids, q_frames,
                           g_features, g_cam_ids, g_frames,
@@ -97,7 +97,7 @@ if __name__ == "__main__":
                         required=True, help="Path to load the query dataset")
     parser.add_argument('-d', '--gallery_data_dir', type=str,
                         required=True, help="Path to load the gallery dataset")
-    parser.add_argument('-s', '--st_distribution', type=str,
+    parser.add_argument('-s', '--st_distribution_path', type=str,
                         required=True, help="Path to the sptial-temporal distribution of the data")
     parser.add_argument('-b', '--batch_size', type=int,
                         required=False, default=64, help="Batch size for evaluating the model")

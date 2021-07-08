@@ -1,6 +1,6 @@
 import csv
 from argparse import Namespace
-from pathlib2 import Path
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import torch

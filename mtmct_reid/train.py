@@ -1,17 +1,17 @@
 import os
 from argparse import ArgumentParser
+from pathlib import Path
 
-from pathlib2 import Path
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
 from pytorch_lightning.loggers.test_tube import TestTubeLogger
 
-from data import ReIDDataModule
-from engine import ST_ReID
-from utils import save_args
+from .data import ReIDDataModule
+from .engine import ST_ReID
+from .utils import save_args
 
 
-def main(args):
+def train(args):
     tt_logger = TestTubeLogger(save_dir=args.log_path, name="",
                                description=args.description,
                                create_git_tag=args.git_tag,
@@ -55,4 +55,4 @@ if __name__ == "__main__":
 
     print(f'\nArguments: \n{args}\n')
 
-    main(args)
+    train(args)

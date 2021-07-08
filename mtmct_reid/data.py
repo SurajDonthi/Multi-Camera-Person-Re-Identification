@@ -1,15 +1,15 @@
+from pathlib import Path
 from typing import Optional, Union
 
 import joblib
 import pytorch_lightning as pl
-from pathlib2 import Path
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset, random_split
 from torch.utils.data.dataset import Subset
 from torchvision import transforms
 
-from metrics import smooth_st_distribution
-from utils import get_ids
+from .metrics import smooth_st_distribution
+from .utils import get_ids
 
 
 class ReIDDataset(Dataset):
