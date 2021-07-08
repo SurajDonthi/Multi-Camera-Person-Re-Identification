@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 import joblib
 import pytorch_lightning as pl
@@ -35,7 +35,9 @@ class ReIDDataset(Dataset):
 
     """
 
-    def __init__(self, data_dir: str, transform=None, target_transform=None,
+    def __init__(self, data_dir: str,
+                 dataset: Literal['market', 'duke'] = 'market', transform=None,
+                 target_transform=None,
                  ret_camid_n_frame: bool = False):
 
         super(ReIDDataset, self).__init__()
@@ -51,14 +53,10 @@ class ReIDDataset(Dataset):
         self.transform = transform
         self.target_transform = target_transform
         self.ret_camid_n_frame = ret_camid_n_frame
+        self.dataset = dataset
         self._init_data()
 
     def _init_data(self):
-
-        if 'market' in str(self.data_dir).lower():
-            self.dataset = 'market'
-        elif 'duke' in str(self.data_dir).lower():
-            self.dataset = 'duke'
 
         self.imgs = list(self.data_dir.glob('*.jpg'))
         # Filter out labels with -1
@@ -96,7 +94,9 @@ class ReIDDataset(Dataset):
 
 class ReIDDataModule(pl.LightningDataModule):
 
-    def __init__(self, data_dir: str, st_distribution: Optional[str] = None,
+    def __init__(self, data_dir: str,
+                 dataset: Literal['market', 'duke'] = 'market',
+                 st_distribution: Optional[str] = None,
                  train_subdir: str = 'bounding_box_train',
                  test_subdir: str = 'bounding_box_test',
                  query_subdir: str = 'query', train_batchsize: int = 16,
@@ -108,6 +108,7 @@ class ReIDDataModule(pl.LightningDataModule):
         super().__init__()
 
         self.data_dir = Path(data_dir)
+        self.dataset = dataset
 
         if not self.data_dir.exists():
             raise Exception(
@@ -151,17 +152,18 @@ class ReIDDataModule(pl.LightningDataModule):
             train_transforms.append(transforms.ColorJitter())
 
         train_transforms = transforms.Compose(train_transforms)
-        self.train = ReIDDataset(self.train_dir, train_transforms)
+        self.train = ReIDDataset(
+            self.train_dir, self.dataset, train_transforms)
         self.num_classes = len(self.train.classes)
         train_len = int(len(self.train) * 0.8)
         test_len = len(self.train) - train_len
         self.train, self.test = random_split(self.train, [train_len, test_len])
 
         test_transforms = transforms.Compose(test_transforms)
-        self.test = ReIDDataset(self.test_dir, test_transforms)
-        self.query = ReIDDataset(self.query_dir, test_transforms,
+        self.test = ReIDDataset(self.test_dir, self.dataset, test_transforms)
+        self.query = ReIDDataset(self.query_dir, self.dataset, test_transforms,
                                  ret_camid_n_frame=True)
-        self.gallery = ReIDDataset(self.test_dir, test_transforms,
+        self.gallery = ReIDDataset(self.test_dir, self.dataset, test_transforms,
                                    ret_camid_n_frame=True)
 
         self._load_st_distribution()

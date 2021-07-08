@@ -65,7 +65,7 @@ NOTE: This project uses [pytorch-lightning](https://pytorch-lightning.readthedoc
 Run the below command in the shell.
 
 ```sh
-python -m mtmct_reid.train --data_dir path/to/dataset/ --save_distribution path/to/dataset/st_distribution.pkl --gpus 1 --max_epochs 60
+python -m mtmct_reid.train --data_dir path/to/dataset/ --dataset 'market' --save_distribution path/to/dataset/st_distribution.pkl --gpus 1 --max_epochs 60
 ```
 
 For a detailed list of arguments you can pass, refer to [`hparams.csv`](https://github.com/SurajDonthi/MTMCT-Person-Re-Identification/blob/master/hparams.csv)
@@ -83,7 +83,7 @@ tensorboard --logdir logs/
 Using commandline:
 
 ```sh
-python -m mtmct_reid.eval model_path 'path/to/model' --query_data_dir 'path/to/query_data/' --gallery_data_dir 'path/to/gallery_data' --st_distribution_path 'path/to/spatio-temporal_distribution' batch_size 64 num_workers 4 re_rank True
+python -m mtmct_reid.eval model_path 'path/to/model' --dataset 'market' --query_data_dir 'path/to/query_data/' --gallery_data_dir 'path/to/gallery_data' --st_distribution_path 'path/to/spatio-temporal_distribution' batch_size 64 num_workers 4 re_rank True
 ```
 
 Or simply use the code below:
@@ -132,12 +132,12 @@ def main(args):
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
-    query_data = ReIDDataset(data_dir=args.query_data_dir, transform=transform)
+    query_data = ReIDDataset(data_dir=args.query_data_dir, dataset=args.dataset, transform=transform)
     query_dataloader = DataLoader(query_data, batch_size=args.batch_size,
                                   shuffle=True, num_workers=args.num_workers,
                                   pin_memory=True)
 
-    gal_data = ReIDDataset(data_dir=args.gallery_data_dir, transform=transform)
+    gal_data = ReIDDataset(data_dir=args.gallery_data_dir, dataset=args.dataset, transform=transform)
     gal_dataloader = DataLoader(gal_data, batch_size=args.batch_size,
                                 shuffle=True, num_workers=args.num_workers,
                                 pin_memory=True)
@@ -184,6 +184,7 @@ if __name__ == "__main__":
 
     args = dict(
         model_path='path/to/model',
+        dataset='market',
         query_data_dir='path/to/query_data',
         gallery_data_dir='path/to/gallery_data',
         st_distribution_path='path/to/spatio-temporal_distribution',

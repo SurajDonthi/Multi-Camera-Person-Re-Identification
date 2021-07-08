@@ -41,12 +41,14 @@ def main(args):
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
-    query_data = ReIDDataset(data_dir=args.query_data_dir, transform=transform)
+    query_data = ReIDDataset(data_dir=args.query_data_dir,
+                             dataset=args.dataset, transform=transform)
     query_dataloader = DataLoader(query_data, batch_size=args.batch_size,
                                   shuffle=True, num_workers=args.num_workers,
                                   pin_memory=True)
 
-    gal_data = ReIDDataset(data_dir=args.gallery_data_dir, transform=transform)
+    gal_data = ReIDDataset(data_dir=args.gallery_data_dir,
+                           dataset=args.dataset, transform=transform)
     gal_dataloader = DataLoader(gal_data, batch_size=args.batch_size,
                                 shuffle=True, num_workers=args.num_workers,
                                 pin_memory=True)
@@ -93,6 +95,8 @@ if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('-m', '--model_path', type=str,
                         required=True, help="Path to the model")
+    parser.add_argument('-qd', '--dataset', type=str,
+                        required=True, help="Specify between 'market' or 'duke' dataset")
     parser.add_argument('-qd', '--query_data_dir', type=str,
                         required=True, help="Path to load the query dataset")
     parser.add_argument('-d', '--gallery_data_dir', type=str,
