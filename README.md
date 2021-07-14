@@ -84,8 +84,10 @@ tensorboard --logdir logs/
 Using commandline:
 
 ```sh
-python -m mtmct_reid.eval model_path 'path/to/model' --dataset 'market' --query_data_dir 'path/to/query_data/' \
-    --gallery_data_dir 'path/to/gallery_data' --st_distribution_path 'path/to/spatio-temporal_distribution' \
+python -m mtmct_reid.eval model_path 'path/to/model' --dataset 'market' \
+    --query_data_dir 'path/to/query_data/' \
+    --gallery_data_dir 'path/to/gallery_data' \
+    --st_distribution_path 'path/to/spatio-temporal_distribution' \
     --batch_size 64 --num_workers 4 --re_rank True
 ```
 <!--
