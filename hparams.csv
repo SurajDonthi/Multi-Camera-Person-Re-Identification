@@ -1,6 +1,6 @@
 hparam,value
 
-log_path,./lightning_logs
+log_path,logs
 
 learning_rate,0.1
 
