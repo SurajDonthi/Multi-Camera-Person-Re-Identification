@@ -1,7 +1,7 @@
 torch>=1.7.1
 torchvision>=0.8.0
 torchtext==0.8.0
-pytorch-lightning==1.2.2
+pytorch-lightning==1.2.10
 tensorboard==2.2.0
 test-tube
 joblib
