@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Optional, Union
+from typing_extensions import Literal
 
 import joblib
 import pytorch_lightning as pl
