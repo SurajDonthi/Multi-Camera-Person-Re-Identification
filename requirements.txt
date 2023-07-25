@@ -1,4 +1,4 @@
-torch==1.7.1
+torch
 torchvision>=0.8.0
 torchtext==0.8.0
 pytorch-lightning==1.2.10
