@@ -1,6 +1,6 @@
 # Multi-Camera Person Re-Identification
 
-This repository is inspired by the paper [Spatial-Temporal Reidentification (ST-ReID)](https://arxiv.org/abs/1812.03282v1)[1]. The state-of-the-art for Person Re-identification tasks. This repository offers a flexible, and easy to understand clean implementation of the model architecture, training and evaluation.
+This repository is inspired by the paper [Spatial-Temporal Reidentification (ST-ReID)](https://arxiv.org/abs/1812.03282v1)[^1]. The state-of-the-art for Person Re-identification tasks. This repository offers a flexible, and easy to understand clean implementation of the model architecture, training and evaluation.
 
 This repository has been trained & tested on [DukeMTMTC-reID](https://megapixels.cc/duke_mtmc/) and [Market-1501 datasets](https://www.kaggle.com/pengcw1/market-1501). The model can be easily trained on any new datasets with a few tweaks to parse the files!
 
@@ -33,7 +33,7 @@ Below are the metrics on the various datasets.
 
 **During Testing/Evaluation/Deployment**
 
-> 1. Only the visual feature stream up until Adaptive Average Pooling is used.
+> 1. Only the visual feature stream up until Adaptive Average Pooling[^2] is used.
 > 2. The feature vector of the query image is compared against all the feature vectors of the gallery images using a simple dot product & normalization.
 > 3. The Spatio-Temporal distribution is used to calculate their spatio-temporal scores.
 > 4. The joint score is then calculated from the feature score and the spatio-temporal scores.
@@ -236,9 +236,9 @@ Finding the best matches during testing:
 
 **References:**
 
-[1] - [Spatial-Temporal Reidentification(ST-ReID)](https://arxiv.org/pdf/1812.03282.pdf)
+[^1]: [Spatial-Temporal Reidentification(ST-ReID)](https://arxiv.org/pdf/1812.03282.pdf)
 
-[2] - [Beyond Parts Models: Person Retrieval with Refined Part Pooling](https://arxiv.org/pdf/1711.09349)
+[^2]: [Beyond Parts Models: Person Retrieval with Refined Part Pooling](https://arxiv.org/pdf/1711.09349)
 
 **Related repos:**
 
